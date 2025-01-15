@@ -46,11 +46,14 @@ jobs:
             fi
           EOF
 
-
       - name: Install Dependencies and Build
         run: |
           set -e
           ssh $USER@$HOST << 'EOF'
+            # nvm 환경 로드 및 원하는 버전 사용
+            source ~/.nvm/nvm.sh
+            nvm use 22.13.0
+
             cd /home/ubuntu/ezen-main-frontend
             npm install
             npm run build
@@ -60,6 +63,8 @@ jobs:
         run: |
           set -e
           ssh $USER@$HOST << 'EOF'
+            source ~/.nvm/nvm.sh
+            nvm use 22.13.0
             cd /home/ubuntu/ezen-main-frontend
 
             # 이미 deer-side 프로세스가 있다면 중지 후 삭제
@@ -77,6 +82,9 @@ jobs:
       - name: Debug PM2 Logs
         run: |
           ssh $USER@$HOST << 'EOF'
+            source ~/.nvm/nvm.sh
+            nvm use 22.13.0
+
             pm2 list
             pm2 logs deer-side --nostream --lines 100 || true
           EOF
