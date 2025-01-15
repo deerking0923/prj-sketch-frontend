@@ -1,1 +1,84 @@
-ㅇ
+name: DEERKING-NextJS CICD
+
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-24.04
+    environment: DEERKING
+
+    env:
+      HOST: ${{ secrets.ORACLE_NEXTJS_HOST }}
+      USER: ${{ secrets.ORACLE_NEXTJS_USER }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Configure SSH Key
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.ORACLE_NEXTJS_KEY }}
+        run: |
+          set -e
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
+          ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+
+      - name: Update Source Code on EC2
+        run: |
+          set -e
+          ssh $USER@$HOST << 'EOF'
+            if [ ! -d /home/ubuntu/ezen-main-frontend ]; then
+              echo "Directory not found. Cloning repository..."
+              git clone https://github.com/deerking0923/ezen-main-frontend.git /home/ubuntu/ezen-main-frontend
+            else
+              echo "Directory exists. Resetting and pulling latest changes..."
+              cd /home/ubuntu/ezen-main-frontend
+              git reset --hard HEAD
+              git pull
+            fi
+          EOF
+
+      - name: Install Dependencies and Build on EC2
+        run: |
+          set -e
+          ssh $USER@$HOST << 'EOF'
+            cd /home/ubuntu/ezen-main-frontend
+            npm install
+            npm run build
+          EOF
+
+      # PM2 배포/재시작 로직
+      - name: Deploy Application on EC2
+        run: |
+          set -e
+          ssh $USER@$HOST << 'EOF'
+            cd /home/ubuntu/ezen-main-frontend
+
+            # 이미 deer-side 프로세스가 있다면 완전히 중지 후 삭제
+            if pm2 describe deer-side > /dev/null; then
+              echo "Stopping existing PM2 process..."
+              pm2 stop deer-side || true
+              pm2 delete deer-side || true
+            fi
+
+            echo "Starting PM2 process..."
+            pm2 start npm --name "deer-side" -- run start || { echo "Start failed"; exit 1; }
+
+            pm2 save || { echo "PM2 save failed"; exit 1; }
+          EOF
+
+      # PM2 상태 및 로그 확인 (타임아웃 대비 --nostream 사용)
+      - name: Debug PM2 Logs
+        run: |
+          ssh $USER@$HOST << 'EOF'
+            pm2 list
+            pm2 logs ezen-nextjs --nostream --lines 100 || true
+          EOF
