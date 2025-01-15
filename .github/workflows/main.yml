@@ -6,7 +6,6 @@ on:
   pull_request:
     branches: ['main']
 
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-24.04
@@ -35,6 +34,7 @@ jobs:
         run: |
           set -e
           ssh $USER@$HOST << 'EOF'
+            # 프로젝트 디렉토리가 없으면 git clone, 있으면 최신 커밋 pull
             if [ ! -d /home/ubuntu/ezen-main-frontend ]; then
               echo "Directory not found. Cloning repository..."
               git clone https://github.com/deerking0923/ezen-main-frontend.git /home/ubuntu/ezen-main-frontend
@@ -46,7 +46,20 @@ jobs:
             fi
           EOF
 
-      - name: Install Dependencies and Build on EC2
+      # [추가] Node.js 22.x & npm 설치 (이미 설치되어 있다면 생략 가능)
+      - name: Install Node.js on Oracle
+        run: |
+          set -e
+          ssh $USER@$HOST << 'EOF'
+            sudo apt-get update
+            sudo apt-get install -y curl
+            curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+            sudo apt-get install -y nodejs
+            node -v
+            npm -v
+          EOF
+
+      - name: Install Dependencies and Build
         run: |
           set -e
           ssh $USER@$HOST << 'EOF'
@@ -55,14 +68,13 @@ jobs:
             npm run build
           EOF
 
-      # PM2 배포/재시작 로직
-      - name: Deploy Application on EC2
+      - name: Deploy Application via PM2
         run: |
           set -e
           ssh $USER@$HOST << 'EOF'
             cd /home/ubuntu/ezen-main-frontend
 
-            # 이미 deer-side 프로세스가 있다면 완전히 중지 후 삭제
+            # 이미 deer-side 프로세스가 있다면 중지 후 삭제
             if pm2 describe deer-side > /dev/null; then
               echo "Stopping existing PM2 process..."
               pm2 stop deer-side || true
@@ -71,14 +83,12 @@ jobs:
 
             echo "Starting PM2 process..."
             pm2 start npm --name "deer-side" -- run start || { echo "Start failed"; exit 1; }
-
             pm2 save || { echo "PM2 save failed"; exit 1; }
           EOF
 
-      # PM2 상태 및 로그 확인 (타임아웃 대비 --nostream 사용)
       - name: Debug PM2 Logs
         run: |
           ssh $USER@$HOST << 'EOF'
             pm2 list
-            pm2 logs ezen-nextjs --nostream --lines 100 || true
+            pm2 logs deer-side --nostream --lines 100 || true
           EOF
