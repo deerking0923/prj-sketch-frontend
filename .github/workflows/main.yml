@@ -46,18 +46,6 @@ jobs:
             fi
           EOF
 
-      # [추가] Node.js 22.x & npm 설치 (이미 설치되어 있다면 생략 가능)
-      - name: Install Node.js on Oracle
-        run: |
-          set -e
-          ssh $USER@$HOST << 'EOF'
-            sudo apt-get update
-            sudo apt-get install -y curl
-            curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
-            sudo apt-get install -y nodejs
-            node -v
-            npm -v
-          EOF
 
       - name: Install Dependencies and Build
         run: |
