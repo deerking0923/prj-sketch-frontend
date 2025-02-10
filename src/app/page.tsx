@@ -1,62 +1,71 @@
-// pages/index.tsx (혹은 해당 파일)
-import React, { JSX } from 'react';
+// src/app/page.tsx
+import React from 'react';
+import PopularLoanBooks from './components/PopularLoanBooks';
+import CommunityBoard from './components/CommunityBoard';
+import UserInfo from './components/UserInfo';
 import './home.css';
+import xml2js from 'xml2js';
 
-export default function Home(): JSX.Element {
+// XML 데이터 구조 타입 정의
+interface XMLDoc {
+  bookname: string[];
+  bookImageURL: string[];
+}
+
+interface XMLResponse {
+  response: {
+    docs: [
+      {
+        doc: XMLDoc[];
+      }
+    ];
+  };
+}
+
+// 데이터 패칭 함수
+async function getBooks() {
+  const authKey = process.env.DATA4LIBRARY_AUTH_KEY;
+  const startDt = '2025-02-03';
+  const endDt = '2025-02-09';
+  const pageNo = '1';
+  const pageSize = '5';
+
+  if (!authKey) {
+    throw new Error('DATA4LIBRARY_AUTH_KEY is not defined in environment variables.');
+  }
+
+  const apiUrl = `http://data4library.kr/api/loanItemSrch?authKey=${authKey}&startDt=${startDt}&endDt=${endDt}&pageNo=${pageNo}&pageSize=${pageSize}`;
+  const res = await fetch(apiUrl);
+  const xmlData = await res.text();
+
+  const parser = new xml2js.Parser();
+  const result = (await parser.parseStringPromise(xmlData)) as XMLResponse;
+  const docs = result.response.docs[0].doc || [];
+  const books = docs.map((doc: XMLDoc) => ({
+    title: doc.bookname[0],
+    imageUrl: doc.bookImageURL[0],
+  }));
+  
+  return books;
+}
+
+// 비동기 서버 컴포넌트로 페이지 렌더링
+export default async function HomePage() {
+  const books = await getBooks();
+
   return (
     <div className="main-container">
       <main className="content">
-        <section className="popular-books">
-          <h2>인기 도서 (도서관 정보나루 API에서 따올 예정)</h2>
-          <div className="book-grid">
-            <div className="book-item" />
-            <div className="book-item" />
-            <div className="book-item" />
-            <div className="book-item" />
-          </div>
-        </section>
-        {/* 게시판과 사용자 정보를 묶는 컨테이너 */}
+        {/* 인기 대출 도서 섹션 */}
+        <PopularLoanBooks books={books} />
+
+        {/* 커뮤니티 게시판과 사용자 정보 섹션을 widgets 컨테이너로 묶기 */}
         <section className="widgets">
-          <div className="community-board">
-            <h2>커뮤니티 게시판</h2>
-            <table className="board-table">
-              <tbody>
-                <tr>
-                  <td>제목 : 게시글 제목</td>
-                  <td>작성자 : 사용자명</td>
-                  <td>댓글 수 : 3</td>
-                </tr>
-                <tr>
-                  <td>제목 : 게시글 제목</td>
-                  <td>작성자 : 사용자명</td>
-                  <td>댓글 수 : 1</td>
-                </tr>
-                <tr>
-                  <td>제목 : 게시글 제목</td>
-                  <td>작성자 : 사용자명</td>
-                  <td>댓글 수 : 0</td>
-                </tr>
-                <tr>
-                  <td>제목 : 게시글 제목</td>
-                  <td>작성자 : 사용자명</td>
-                  <td>댓글 수 : 2</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div className="user-info">
-            <h2>사용자 정보</h2>
-            <div className="profile">
-              <div className="avatar" />
-              <div className="user-details">
-                <p>사용자 이름</p>
-                <p>나의 글: 게시글이 없습니다.</p>
-                <button className="library-button">내 서재 보러가기</button>
-              </div>
-            </div>
-          </div>
+          <CommunityBoard />
+          <UserInfo />
         </section>
       </main>
     </div>
   );
+  
 }
