@@ -14,6 +14,7 @@ jobs:
     env:
       HOST: ${{ secrets.ORACLE_NEXTJS_HOST }}
       USER: ${{ secrets.ORACLE_NEXTJS_USER }}
+      DATA4LIBRARY_AUTH_KEY: ${{ secrets.DATA4LIBRARY_AUTH_KEY }}
 
     steps:
       - name: Checkout Repository
