@@ -49,7 +49,7 @@ async function getBooks() {
   return books;
 }
 
-// 비동기 서버 컴포넌트로 페이지 렌더링
+// 비동기 서버 컴포넌트로 페이지 렌더링 해보잣...
 export default async function HomePage() {
   const books = await getBooks();
 
