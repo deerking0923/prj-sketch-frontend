@@ -1,8 +1,8 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import './search.css';
 
-// 네이버 API 도서 검색 결과에 대한 타입 정의 (예시)
 interface SearchResult {
   image: string;
   title: string;
@@ -10,18 +10,20 @@ interface SearchResult {
 }
 
 const BookSearchPage: React.FC = () => {
-  const [query, setQuery] = useState('');
+  const searchParams = useSearchParams();
+  const initialQuery = searchParams.get('query') || '';
+  
+  const [query, setQuery] = useState(initialQuery);
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const fetchResults = async (q: string) => {
     setLoading(true);
     setError('');
     setResults([]);
     try {
-      const response = await fetch(`/api/naver-book-search?query=${encodeURIComponent(query)}`);
+      const response = await fetch(`/api/naver-book-search?query=${encodeURIComponent(q)}`);
       if (!response.ok) {
         throw new Error('API 요청에 실패했습니다.');
       }
@@ -29,10 +31,23 @@ const BookSearchPage: React.FC = () => {
       // data.items에 SearchResult 형식의 결과가 담겨 있다고 가정합니다.
       setResults(data.items || []);
     } catch (err: unknown) {
-      // err를 Error 타입으로 단언하여 메시지를 가져옵니다.
       setError((err as Error).message || '오류가 발생했습니다.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // 페이지 로드시 URL query가 있다면 자동 검색 실행
+  useEffect(() => {
+    if (initialQuery) {
+      fetchResults(initialQuery);
+    }
+  }, [initialQuery]);
+
+  const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (query.trim()) {
+      fetchResults(query);
     }
   };
 
@@ -51,6 +66,9 @@ const BookSearchPage: React.FC = () => {
       </form>
       {loading && <p>검색 중...</p>}
       {error && <p className="error-message">{error}</p>}
+      {(!loading && results.length === 0 && query) && (
+        <p className="no-results-message">검색 결과가 없습니다.</p>
+      )}
       <div className="results">
         {results.map((item, index) => (
           <div key={index} className="result-item">

@@ -1,10 +1,10 @@
 import React from 'react';
-//import './footer.css';
+import '../style/footer.css';
 
 const Footer = () => {
   return (
     <footer className="footer">
-      <p>© 2025 Aquila_Nexus_Library Email : i3295h@naver.com</p>
+      <p>© 2025 Nexus_Library Email: i3295h@naver.com</p>
     </footer>
   );
 };
