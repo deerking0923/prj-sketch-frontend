@@ -3,12 +3,13 @@ import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import "./search.css";
 import Link from "next/link";
-
 interface SearchResult {
   image: string;
   title: string;
   author: string;
-  isbn: string; // ISBN 필드 추가
+  isbn: string;
+  publisher: string; // 출판사 추가
+  pubdate: string; // 출판일 추가
 }
 
 const BookSearchPageContent: React.FC = () => {
@@ -103,10 +104,17 @@ const BookSearchPageContent: React.FC = () => {
                 <h3 className="result-title">{item.title}</h3>
               </Link>
               <p className="result-author">{item.author}</p>
+              <p className="result-publisher">
+                <strong>출판사:</strong> {item.publisher}
+              </p>
+              <p className="result-pubdate">
+                <strong>출판일:</strong> {item.pubdate}
+              </p>
             </div>
           </div>
         ))}
       </div>
+
       {results.length > 0 && totalPages > 1 && (
         <div className="pagination">
           {startPage > 1 && (
