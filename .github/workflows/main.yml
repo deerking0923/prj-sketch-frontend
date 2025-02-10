@@ -76,7 +76,7 @@ jobs:
             fi
 
             echo "Starting PM2 process..."
-            pm2 start npm --name "deer-side" -- run start || { echo "Start failed"; exit 1; }
+            pm2 start ecosystem.config.js --env production || { echo "Start failed"; exit 1; }
             pm2 save || { echo "PM2 save failed"; exit 1; }
           EOF
 
