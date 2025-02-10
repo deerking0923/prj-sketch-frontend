@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import './search.css';
 
@@ -9,10 +9,10 @@ interface SearchResult {
   author: string;
 }
 
-const BookSearchPage: React.FC = () => {
+const BookSearchPageContent: React.FC = () => {
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get('query') || '';
-  
+
   const [query, setQuery] = useState(initialQuery);
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -28,7 +28,7 @@ const BookSearchPage: React.FC = () => {
         throw new Error('API 요청에 실패했습니다.');
       }
       const data = await response.json();
-      // data.items에 SearchResult 형식의 결과가 담겨 있다고 가정합니다.
+      // 네이버 API 응답에서 도서 정보가 data.items에 있다고 가정합니다.
       setResults(data.items || []);
     } catch (err: unknown) {
       setError((err as Error).message || '오류가 발생했습니다.');
@@ -37,7 +37,6 @@ const BookSearchPage: React.FC = () => {
     }
   };
 
-  // 페이지 로드시 URL query가 있다면 자동 검색 실행
   useEffect(() => {
     if (initialQuery) {
       fetchResults(initialQuery);
@@ -81,6 +80,14 @@ const BookSearchPage: React.FC = () => {
         ))}
       </div>
     </div>
+  );
+};
+
+const BookSearchPage: React.FC = () => {
+  return (
+    <Suspense fallback={<div>Loading search page...</div>}>
+      <BookSearchPageContent />
+    </Suspense>
   );
 };
 
