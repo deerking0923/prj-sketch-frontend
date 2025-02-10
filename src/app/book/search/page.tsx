@@ -1,17 +1,19 @@
-'use client';
-import React, { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
-import './search.css';
+"use client";
+import React, { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import "./search.css";
+import Link from "next/link";
 
 interface SearchResult {
   image: string;
   title: string;
   author: string;
+  isbn: string; // ISBN 필드 추가
 }
 
 const BookSearchPageContent: React.FC = () => {
   const searchParams = useSearchParams();
-  const initialQuery = searchParams.get('query') || '';
+  const initialQuery = searchParams.get("query") || "";
 
   // 입력 필드의 값
   const [query, setQuery] = useState(initialQuery);
@@ -19,29 +21,31 @@ const BookSearchPageContent: React.FC = () => {
   const [currentQuery, setCurrentQuery] = useState(initialQuery);
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const display = 10; // 한 페이지당 표시할 결과 수
   const [total, setTotal] = useState(0);
 
   const fetchResults = async (q: string, page: number) => {
     setLoading(true);
-    setError('');
+    setError("");
     try {
       // 네이버 API는 start가 1부터 시작하므로:
       const start = (page - 1) * display + 1;
       const response = await fetch(
-        `/api/naver-book-search?query=${encodeURIComponent(q)}&start=${start}&display=${display}`
+        `/api/naver-book-search?query=${encodeURIComponent(
+          q
+        )}&start=${start}&display=${display}`
       );
       if (!response.ok) {
-        throw new Error('API 요청에 실패했습니다.');
+        throw new Error("API 요청에 실패했습니다.");
       }
       const data = await response.json();
       // API 응답에서 total과 items 필드를 사용 (네이버 API 기준)
       setTotal(data.total || 0);
       setResults(data.items || []);
     } catch (err: unknown) {
-      setError((err as Error).message || '오류가 발생했습니다.');
+      setError((err as Error).message || "오류가 발생했습니다.");
     } finally {
       setLoading(false);
     }
@@ -86,7 +90,7 @@ const BookSearchPageContent: React.FC = () => {
       </form>
       {loading && <p>검색 중...</p>}
       {error && <p className="error-message">{error}</p>}
-      {(!loading && results.length === 0 && query) && (
+      {!loading && results.length === 0 && query && (
         <p className="no-results-message">검색 결과가 없습니다.</p>
       )}
       <div className="results">
@@ -94,7 +98,10 @@ const BookSearchPageContent: React.FC = () => {
           <div key={index} className="result-item">
             <img src={item.image} alt={item.title} className="result-image" />
             <div className="result-details">
-              <h3 className="result-title">{item.title}</h3>
+              {/* 제목을 클릭하면 /book/{isbn}으로 이동 */}
+              <Link href={`/book/${item.isbn}`}>
+                <h3 className="result-title">{item.title}</h3>
+              </Link>
               <p className="result-author">{item.author}</p>
             </div>
           </div>
@@ -117,7 +124,9 @@ const BookSearchPageContent: React.FC = () => {
             <button
               key={pageNumber}
               onClick={() => setCurrentPage(pageNumber)}
-              className={`pagination-button ${pageNumber === currentPage ? 'active' : ''}`}
+              className={`pagination-button ${
+                pageNumber === currentPage ? "active" : ""
+              }`}
             >
               {pageNumber}
             </button>

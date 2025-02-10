@@ -68,7 +68,14 @@
   .result-title {
     font-size: 1.2rem;
     margin: 0;
+    transition: text-decoration 0.3s ease;
   }
+  
+  .result-title:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  
   
   .result-author {
     font-size: 0.9rem;

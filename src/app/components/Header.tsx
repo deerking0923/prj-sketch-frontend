@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import '../style/header.css';
@@ -10,10 +10,18 @@ const Header = () => {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const handleSearch = () => {
+  // 메인 페이지로 돌아가면 검색어를 초기화
+  useEffect(() => {
+    if (pathname === '/') {
+      setSearchQuery('');
+    }
+  }, [pathname]);
+
+  // form 제출 시 (엔터키 포함) 검색 실행
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     const trimmedQuery = searchQuery.trim();
     if (trimmedQuery !== '') {
-      // /book/search 페이지로 이동하면서 query 파라미터 전달
       router.push(`/book/search?query=${encodeURIComponent(trimmedQuery)}`);
     }
   };
@@ -22,7 +30,7 @@ const Header = () => {
     <header className="header">
       <div className="logo">로고</div>
       {pathname === '/' ? (
-        <div className="search-container">
+        <form className="search-container" onSubmit={handleSearch}>
           <input
             type="text"
             className="search-bar"
@@ -30,10 +38,10 @@ const Header = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <button className="search-button" onClick={handleSearch}>
+          <button type="submit" className="search-button">
             검색
           </button>
-        </div>
+        </form>
       ) : (
         <Link href="/">
           <div className="alt-text" style={{ cursor: 'pointer' }}>다독다독</div>
