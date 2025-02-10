@@ -22,11 +22,12 @@ interface XMLResponse {
   };
 }
 
-// 데이터 패칭 함수 woqovh!!!
 async function getBooks() {
   const authKey = process.env.DATA4LIBRARY_AUTH_KEY;
-  const startDt = '2025-02-03';
-  const endDt = '2025-02-09';
+  // 오늘 날짜를 "YYYY-MM-DD" 형식으로 생성
+  const today = new Date().toISOString().slice(0, 10);
+  const startDt = today;
+  const endDt = today;
   const pageNo = '1';
   const pageSize = '5';
 
@@ -48,6 +49,7 @@ async function getBooks() {
   
   return books;
 }
+
 
 // 비동기 서버 컴포넌트로 페이지 렌더링 해보잣...
 export default async function HomePage() {

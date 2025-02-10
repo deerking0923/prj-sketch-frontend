@@ -99,10 +99,18 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 120px; /* 이미지와 동일한 너비 */
 }
 
 .loan-book-item img {
-  width: 120px;   /* 원하는 크기로 조정 */
-  height: auto;
+  width: 120px;       /* 고정 너비 */
+  height: 180px;      /* 고정 높이 */
+  object-fit: cover;  /* 이미지의 중앙 부분을 채움 */
   border-radius: 4px;
+}
+
+.loan-book-item p {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 0.9rem;
 }
