@@ -2,14 +2,14 @@
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
-  // 요청 URL에서 query 파라미터 추출
   const { searchParams } = new URL(request.url);
   const query = searchParams.get('query') || '';
+  const start = searchParams.get('start') || '1';      // start 파라미터 읽기, 기본값 1
+  const display = searchParams.get('display') || '10';   // display 파라미터 읽기, 기본값 10
 
-  // 네이버 API URL (예시: 도서 검색 API)
-  const apiUrl = `https://openapi.naver.com/v1/search/book.json?query=${encodeURIComponent(query)}`;
+  // 네이버 도서 검색 API URL에 start와 display 파라미터 추가
+  const apiUrl = `https://openapi.naver.com/v1/search/book.json?query=${encodeURIComponent(query)}&start=${start}&display=${display}`;
 
-  // API 호출 (환경 변수로부터 클라이언트 ID, Secret을 사용)
   const response = await fetch(apiUrl, {
     headers: {
       'X-Naver-Client-Id': process.env.NAVER_CLIENT_ID!,
@@ -17,9 +17,6 @@ export async function GET(request: Request) {
     },
   });
 
-  // 외부 API 응답을 JSON 형태로 파싱
   const data = await response.json();
-
-  // 클라이언트에 응답 반환
   return NextResponse.json(data);
 }
