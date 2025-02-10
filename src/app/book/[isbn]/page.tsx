@@ -13,15 +13,14 @@ interface BookDetail {
 }
 
 interface PageProps {
-  params: { isbn: string } | Promise<{ isbn: string }>;
+  params: Promise<{ isbn: string }>;
 }
 
 export default async function BookDetailPage({ params }: PageProps) {
-  // await params before using its properties
-  const { isbn } = await Promise.resolve(params);
+  // 비동기적으로 params를 처리합니다.
+  const { isbn } = await params;
 
   // 네이버 책 API를 ISBN을 검색어로 사용하여 상세 정보를 가져옵니다.
-  // (display=1로 설정하여 결과를 1건만 가져옵니다.)
   const res = await fetch(
     `https://openapi.naver.com/v1/search/book.json?query=${encodeURIComponent(isbn)}&display=1`,
     {
@@ -29,7 +28,6 @@ export default async function BookDetailPage({ params }: PageProps) {
         'X-Naver-Client-Id': process.env.NAVER_CLIENT_ID!,
         'X-Naver-Client-Secret': process.env.NAVER_CLIENT_SECRET!,
       },
-      // next: { revalidate: 86400 } // (옵션) 1일 캐싱
     }
   );
   const data = await res.json();
