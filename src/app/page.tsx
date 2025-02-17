@@ -26,7 +26,8 @@ async function getBooks() {
   const authKey = process.env.DATA4LIBRARY_AUTH_KEY;
   // 오늘 날짜를 "YYYY-MM-DD" 형식으로 생성
   const today = new Date().toISOString().slice(0, 10);
-  const startDt = today;
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  const startDt = yesterday;  
   const endDt = today;
   const pageNo = '1';
   const pageSize = '5';
