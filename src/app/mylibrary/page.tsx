@@ -6,12 +6,8 @@ import axios from "axios";
 import "./mylibrary.css";
 
 interface ProfileData {
-  nickname: string;
+  name: string;
   email: string;
-  likedPosts: number;
-  recentPosts: number;
-  likedBooks: number;
-  recentComments: number;
 }
 
 interface Book {
@@ -27,7 +23,7 @@ interface Book {
   quotes: string;
   startDate: string;
   endDate: string;
-  pdate: string | null; // 보통 null
+  pdate: string | null;
 }
 
 const MyLibraryPage: React.FC = () => {
@@ -35,37 +31,39 @@ const MyLibraryPage: React.FC = () => {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [books, setBooks] = useState<Book[]>([]);
 
-  // API 게이트웨이 URL은 환경 변수로 관리 (NEXT_PUBLIC_ 접두사를 붙여 브라우저에서도 사용 가능)
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 20;
+
   const API_GATEWAY_URL = "http://localhost:8000";
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
 
-    // 로그인 토큰이나 사용자 ID가 없으면 로그인 페이지로 이동
     if (!token || !userId) {
       router.push("/login");
       return;
     }
 
-    // 프로필 정보는 나중에 API로 받아올 수 있으나, 우선 더미 데이터 사용
-    setProfile({
-      nickname: "별명예시",
-      email: "example@email.com",
-      likedPosts: 10,
-      recentPosts: 5,
-      likedBooks: 7,
-      recentComments: 3,
-    });
-
-    // API 게이트웨이를 통해 내 서재 책 목록을 가져옴
-    const apiUrl = `${API_GATEWAY_URL}/mylibrary-service/${userId}/booklist`;
+    // 1) 실제 사용자 정보 (name, email 등) 불러오기
+    const userUrl = `${API_GATEWAY_URL}/user-service/users/${userId}`;
     axios
-      .get(apiUrl, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .get(userUrl, { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => {
-        // res.data가 배열 형태의 책 목록이라고 가정
+        setProfile({
+          name: res.data.name,
+          email: res.data.email,
+        });
+      })
+      .catch((err) => {
+        console.error("Failed to fetch user info:", err);
+      });
+
+    // 2) 내 서재 책 목록 불러오기
+    const libraryUrl = `${API_GATEWAY_URL}/mylibrary-service/${userId}/booklist`;
+    axios
+      .get(libraryUrl, { headers: { Authorization: `Bearer ${token}` } })
+      .then((res) => {
         setBooks(res.data);
       })
       .catch((err) => {
@@ -77,44 +75,46 @@ const MyLibraryPage: React.FC = () => {
     return <div>Loading...</div>;
   }
 
-  // 책 카드 클릭 시 상세 페이지로 이동 (예: /mylibrary/[id])
+  // 책 상세 페이지 이동
   const handleBookClick = (id: number) => {
     router.push(`/mylibrary/${id}`);
+  };
+
+  // 페이지네이션 로직
+  const totalBooks = books.length;
+  const totalPages = Math.ceil(totalBooks / PAGE_SIZE);
+  const startIndex = (currentPage - 1) * PAGE_SIZE;
+  const endIndex = startIndex + PAGE_SIZE;
+  const currentBooks = books.slice(startIndex, endIndex);
+
+  const handlePrevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+  const handleNextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+
+  // 프로필 페이지로 이동 버튼
+  const goToProfilePage = () => {
+    router.push("/profile");
   };
 
   return (
     <div className="mylibrary-container">
       {/* 프로필 섹션 */}
       <section className="profile-section">
-        <div className="profile-info">
-          <h2>{profile.nickname}</h2>
-          <p>{profile.email}</p>
-        </div>
-        <div className="profile-stats">
-          <div className="stat-item">
-            <span>좋아요한 게시물</span>
-            <span>{profile.likedPosts}</span>
+        <div className="profile-top">
+          <div className="profile-info">
+            <h2>{profile.name}</h2>
+            <p>{profile.email}</p>
           </div>
-          <div className="stat-item">
-            <span>최근에 쓴 게시물</span>
-            <span>{profile.recentPosts}</span>
-          </div>
-          <div className="stat-item">
-            <span>좋아요한 도서</span>
-            <span>{profile.likedBooks}</span>
-          </div>
-          <div className="stat-item">
-            <span>최근에 쓴 댓글</span>
-            <span>{profile.recentComments}</span>
-          </div>
+          <button className="profile-button" onClick={goToProfilePage}>
+            내 프로필 페이지
+          </button>
         </div>
       </section>
 
-      {/* 내 서재 책 목록 섹션 */}
+      {/* 책 목록 섹션 */}
       <section className="books-section">
         <h2>내 서재</h2>
         <div className="books-grid">
-          {books.map((book) => (
+          {currentBooks.map((book) => (
             <div
               key={book.id}
               className="book-card"
@@ -130,6 +130,29 @@ const MyLibraryPage: React.FC = () => {
             </div>
           ))}
         </div>
+
+        {/* 페이지네이션 */}
+        {totalPages > 1 && (
+          <div className="pagination">
+            <button
+              onClick={handlePrevPage}
+              disabled={currentPage === 1}
+              className="page-btn"
+            >
+              이전
+            </button>
+            <span className="page-info">
+              {currentPage} / {totalPages}
+            </span>
+            <button
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+              className="page-btn"
+            >
+              다음
+            </button>
+          </div>
+        )}
       </section>
     </div>
   );

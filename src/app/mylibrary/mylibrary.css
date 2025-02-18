@@ -6,27 +6,51 @@
     background-color: #f9f9f9;
   }
   
-  /* 프로필 섹션 */
+
   .profile-section {
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 8px;
     padding: 20px;
-    margin-bottom: 30px;
-    text-align: center;
+    margin-bottom: 20px;
   }
   
+  /* 프로필 섹션의 상단 레이아웃 */
+  .profile-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  /* 왼쪽에 이름/이메일 */
   .profile-info h2 {
-    margin: 0;
-    font-size: 1.8rem;
+    margin: 0 0 5px;
+    font-size: 1.5rem;
     color: #333;
   }
   
   .profile-info p {
-    margin: 5px 0 15px;
-    color: #555;
+    margin: 0;
+    color: #666;
+    font-size: 0.95rem;
   }
   
+  /* 오른쪽에 프로필 페이지로 이동 버튼 */
+  .profile-button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    background-color: #28a745;
+    color: #fff;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background 0.3s, transform 0.3s;
+  }
+  
+  .profile-button:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+  }
   /* 프로필 통계 영역 */
   .profile-stats {
     display: flex;
@@ -102,4 +126,29 @@
     font-size: 0.9rem;
     line-height: 1.4;
   }
+  .pagination {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: center;
+  }
   
+  .page-btn {
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .page-btn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+  
+  .page-info {
+    font-size: 0.95rem;
+    color: #333;
+  }
