@@ -14,13 +14,31 @@ const LoginPage: React.FC = () => {
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      // 백엔드의 로그인 API 호출 (/login)
-      const response = await axios.post("/login", { email, password });
-      // 응답 헤더에서 JWT 토큰과 사용자 ID 추출
+      // 로그인 API 호출: user-service의 로그인 엔드포인트
+      const response = await axios.post(
+        "http://127.0.0.1:8000/user-service/login",
+        {
+          email,
+          password,
+        },
+        {
+          withCredentials: true,  // CORS 설정과 쿠키 포함을 위해 추가
+        }
+      );
+
+      // 응답 헤더 확인
+      console.log(response.headers); // 전체 헤더 출력
+
+      // 응답 헤더에서 JWT 토큰과 사용자 ID 추출 (백엔드에서 발급)
       const token = response.headers["token"];
       const userId = response.headers["userid"];
+
+      // 콘솔에 토큰과 사용자 ID 출력
+      console.log("Token:", token); // 토큰 확인
+      console.log("User ID:", userId); // 사용자 ID 확인
+
       if (token && userId) {
-        // 클라이언트 측 저장 (localStorage 또는 쿠키)
+        // JWT 토큰과 사용자 ID를 localStorage에 저장
         localStorage.setItem("token", token);
         localStorage.setItem("userId", userId);
         // 로그인 성공 후 메인 페이지로 이동
@@ -29,13 +47,18 @@ const LoginPage: React.FC = () => {
         setError("로그인 정보가 올바르지 않습니다.");
       }
     } catch (err: unknown) {
-        if (axios.isAxiosError(err)) {
-          setError(err.response?.data || "로그인에 실패했습니다.");
-        } else {
-          setError("로그인에 실패했습니다.");
-        }
+      // Axios 에러 체크 및 에러 메시지 문자열화 처리
+      if (axios.isAxiosError(err)) {
+        const errData = err.response?.data;
+        const errMsg =
+          typeof errData === "object"
+            ? JSON.stringify(errData)
+            : errData || "로그인에 실패했습니다.";
+        setError(errMsg);
+      } else {
+        setError("로그인에 실패했습니다.");
       }
-      
+    }
   };
 
   return (
@@ -65,7 +88,9 @@ const LoginPage: React.FC = () => {
             required
           />
         </div>
-        <button type="submit" className="login-button">로그인</button>
+        <button type="submit" className="login-button">
+          로그인
+        </button>
       </form>
     </div>
   );

@@ -1,24 +1,26 @@
-"use client"; // 꼭 최상단에 위치해야 합니다.
+// src/app/components/UserInfo.tsx
+"use client";
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-
 
 interface UserInfoData {
   name: string;
   email: string;
-  // 추가 필드가 있으면 여기 추가
+  // 추가 필드가 있으면 여기에 선언
 }
 
 const UserInfo: React.FC = () => {
   const [user, setUser] = useState<UserInfoData | null>(null);
-  // localStorage는 클라이언트에서만 정의되므로, 컴포넌트가 클라이언트 전용임을 보장합니다.
+
+  // 브라우저에서만 존재하는 localStorage 접근
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId");
 
   useEffect(() => {
     if (token && userId) {
       axios
-        .get(`/users/${userId}`, {
+        .get(`http://127.0.0.1:8000/user-service/users/${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => setUser(res.data))

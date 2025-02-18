@@ -1,10 +1,10 @@
 // src/app/page.tsx
 import React from 'react';
+import xml2js from 'xml2js';
 import PopularLoanBooks from './components/PopularLoanBooks';
 import CommunityBoard from './components/CommunityBoard';
-import UserInfo from './components/UserInfo';
+import UserInfoWrapper from './components/UserInfoWrapper'; // 동적 임포트 래퍼 사용
 import './home.css';
-import xml2js from 'xml2js';
 
 // XML 데이터 구조 타입 정의
 interface XMLDoc {
@@ -24,19 +24,14 @@ interface XMLResponse {
 
 async function getBooks() {
   const authKey = process.env.DATA4LIBRARY_AUTH_KEY;
-  // 오늘 날짜를 "YYYY-MM-DD" 형식으로 생성
-  const today = new Date().toISOString().slice(0, 10);
-  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
-  const startDt = yesterday;  
-  const endDt = today;
-  const pageNo = '1';
-  const pageSize = '5';
-
   if (!authKey) {
     throw new Error('DATA4LIBRARY_AUTH_KEY is not defined in environment variables.');
   }
 
-  const apiUrl = `http://data4library.kr/api/loanItemSrch?authKey=${authKey}&startDt=${startDt}&endDt=${endDt}&pageNo=${pageNo}&pageSize=${pageSize}`;
+  const today = new Date().toISOString().slice(0, 10);
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  
+  const apiUrl = `http://data4library.kr/api/loanItemSrch?authKey=${authKey}&startDt=${yesterday}&endDt=${today}&pageNo=1&pageSize=5`;
   const res = await fetch(apiUrl);
   const xmlData = await res.text();
 
@@ -51,24 +46,20 @@ async function getBooks() {
   return books;
 }
 
-
-// 비동기 서버 컴포넌트로 페이지 렌더링 해보잣...
+// HomePage는 Server Component이므로 async/await 사용 가능
 export default async function HomePage() {
   const books = await getBooks();
 
   return (
     <div className="main-container">
       <main className="content">
-        {/* 인기 대출 도서 섹션 */}
         <PopularLoanBooks books={books} />
-
-        {/* 커뮤니티 게시판과 사용자 정보 섹션을 widgets 컨테이너로 묶기 */}
         <section className="widgets">
           <CommunityBoard />
-          <UserInfo />
+          {/* 클라이언트 전용 UserInfo는 동적 임포트를 통해 렌더링 */}
+          <UserInfoWrapper />
         </section>
       </main>
     </div>
   );
-  
 }
