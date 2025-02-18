@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
-import "./mylibraryDetail.css"; // CSS 파일 import
+import "./mylibraryDetail.css";
 
 interface BookQuoteDto {
   id: number;
@@ -28,14 +28,13 @@ interface UserBookDetail {
 }
 
 const MyLibraryDetailPage: React.FC = () => {
-  const { id } = useParams(); // dynamic route param
+  const { id } = useParams(); // dynamic route param (book id)
   const router = useRouter();
   const [bookDetail, setBookDetail] = useState<UserBookDetail | null>(null);
 
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId");
 
-  // API 게이트웨이 URL
   const API_GATEWAY_URL =
     process.env.NEXT_PUBLIC_API_GATEWAY_URL || "http://localhost:8000";
 
@@ -44,16 +43,36 @@ const MyLibraryDetailPage: React.FC = () => {
       router.push("/login");
       return;
     }
-
-    // GET /mylibrary-service/{userId}/book/{id}
     const url = `${API_GATEWAY_URL}/mylibrary-service/${userId}/book/${id}`;
     axios
-      .get(url, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .get(url, { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => setBookDetail(res.data))
       .catch((err) => console.error(err));
   }, [id, router, token, userId]);
+
+  const handleDelete = async () => {
+    if (!token || !userId) {
+      alert("로그인 후 이용 가능합니다.");
+      router.push("/login");
+      return;
+    }
+    if (!confirm("정말 이 책 기록을 삭제하시겠습니까?")) return;
+
+    try {
+      const url = `${API_GATEWAY_URL}/mylibrary-service/${userId}/book/${id}`;
+      await axios.delete(url, { headers: { Authorization: `Bearer ${token}` } });
+      alert("삭제되었습니다.");
+      router.push("/mylibrary");
+    } catch (err) {
+      console.error(err);
+      alert("삭제 실패");
+    }
+  };
+
+  const handleEdit = () => {
+    // 수정 페이지로 이동. 예를 들어 /mylibrary/{id}/edit 페이지를 구현했다고 가정.
+    router.push(`/mylibrary/${id}/edit`);
+  };
 
   if (!bookDetail) {
     return <div className="detail-loading">Loading...</div>;
@@ -62,26 +81,32 @@ const MyLibraryDetailPage: React.FC = () => {
   return (
     <div className="mylibrary-detail-container">
       <div className="book-header">
-        <img
-          className="book-thumbnail"
-          src={bookDetail.thumbnail}
-          alt={bookDetail.title}
-        />
-        <div className="book-info">
-          <h1 className="book-title">{bookDetail.title}</h1>
-          <p className="book-author">저자: {bookDetail.author}</p>
-          <p className="book-publisher">출판: {bookDetail.publisher}</p>
-          <p className="book-pdate">
-            발행일: {bookDetail.pDate ?? "정보 없음"}
-          </p>
-          <p className="book-startDate">시작 날짜: {bookDetail.startDate}</p>
-          <p className="book-endDate">완독 날짜: {bookDetail.endDate}</p>
+        <div className="info-group">
+          <img
+            className="book-thumbnail"
+            src={bookDetail.thumbnail}
+            alt={bookDetail.title}
+          />
+          <div className="book-info">
+            <h1 className="book-title">{bookDetail.title}</h1>
+            <p className="book-author">저자: {bookDetail.author}</p>
+            <p className="book-publisher">출판: {bookDetail.publisher}</p>
+            <p className="book-pdate">
+              발행일: {bookDetail.pDate ?? "정보 없음"}
+            </p>
+            <p className="book-startDate">시작 날짜: {bookDetail.startDate}</p>
+            <p className="book-endDate">완독 날짜: {bookDetail.endDate}</p>
+          </div>
+        </div>
+        <div className="action-buttons">
+          <button className="edit-btn" onClick={handleEdit}>
+            수정
+          </button>
+          <button className="delete-btn" onClick={handleDelete}>
+            삭제
+          </button>
         </div>
       </div>
-      {/* <div className="book-description">
-        <h2>책 소개</h2>
-        <p>{bookDetail.description}</p>
-      </div> */}
       <div className="book-record">
         <h2>나의 기록</h2>
         <p>{bookDetail.personalReview}</p>

@@ -3,38 +3,39 @@
     max-width: 900px;
     margin: 40px auto;
     padding: 20px;
-    background-color: #ffffff;
+    background-color: #fefefe;
     border-radius: 10px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    font-family: "Helvetica Neue", sans-serif;
   }
   
-  /* 로딩 메시지 */
-  .detail-loading {
-    text-align: center;
-    font-size: 1.2rem;
-    margin-top: 50px;
-  }
-  
-  /* 상단 헤더 영역 */
+  /* 책 헤더 영역: flex 레이아웃, 버튼 그룹을 상단에 배치 */
   .book-header {
     display: flex;
-    gap: 20px;
+    justify-content: space-between;
+    align-items: flex-start;
     margin-bottom: 30px;
   }
   
+  /* 정보 그룹: 책 이미지와 정보 */
+  .info-group {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+  
+  /* 책 이미지 */
   .book-thumbnail {
     width: 220px;
     height: 320px;
     object-fit: cover;
     border-radius: 8px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
   }
   
+  /* 책 정보 */
   .book-info {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
   }
   
   .book-title {
@@ -50,28 +51,77 @@
   .book-endDate {
     margin: 3px 0;
     color: #555;
+    font-size: 0.95rem;
+    line-height: 1.4;
   }
   
-  /* 책 소개 */
-  .book-description,
+  /* 액션 버튼 그룹 */
+  .action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 0; /* 필요시 조절 */
+  }
+  
+  /* 수정 버튼 */
+  .edit-btn {
+    padding: 10px 16px;
+    background: linear-gradient(135deg, #28a745, #218838);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background 0.3s, transform 0.3s;
+  }
+  
+  .edit-btn:hover {
+    background: linear-gradient(135deg, #218838, #1e7e34);
+    transform: translateY(-2px);
+  }
+  
+  /* 삭제 버튼 */
+  .delete-btn {
+    padding: 10px 16px;
+    background: linear-gradient(135deg, #dc3545, #b02a37);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background 0.3s, transform 0.3s;
+  }
+  
+  .delete-btn:hover {
+    background: linear-gradient(135deg, #b02a37, #8a1c2d);
+    transform: translateY(-2px);
+  }
+  
+  /* 나머지 섹션 스타일 */
   .book-record,
   .book-quotes {
-    background-color: #f9f9f9;
-    border-left: 5px solid #6c757d;
-    padding: 15px 20px;
+    background-color: #fafafa;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 20px;
     margin-bottom: 20px;
-    border-radius: 5px;
   }
   
-  .book-description h2,
   .book-record h2,
   .book-quotes h2 {
-    font-size: 1.4rem;
-    margin: 0 0 10px;
-    color: #6c757d;
+    margin-top: 0;
+    font-size: 1.5rem;
+    color: #444;
   }
   
-  /* 기록 문장 목록 */
+  .book-record p,
+  .book-quotes p {
+    font-size: 1rem;
+    color: #666;
+    line-height: 1.5;
+  }
+  
+  /* 기록 문장 항목 */
   .quote-item {
     display: flex;
     gap: 10px;
