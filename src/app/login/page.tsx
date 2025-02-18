@@ -44,17 +44,12 @@ const LoginPage: React.FC = () => {
         // 로그인 성공 후 메인 페이지로 이동
         router.push("/");
       } else {
-        setError("로그인 정보가 올바르지 않습니다.");
+        setError("로그인 정보가 일지하지 않습니다.");
       }
     } catch (err: unknown) {
       // Axios 에러 체크 및 에러 메시지 문자열화 처리
       if (axios.isAxiosError(err)) {
-        const errData = err.response?.data;
-        const errMsg =
-          typeof errData === "object"
-            ? JSON.stringify(errData)
-            : errData || "로그인에 실패했습니다.";
-        setError(errMsg);
+        setError("로그인 정보가 일지하지 않습니다.");
       } else {
         setError("로그인에 실패했습니다.");
       }

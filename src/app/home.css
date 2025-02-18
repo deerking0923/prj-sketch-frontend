@@ -1,3 +1,4 @@
+/* 전체 레이아웃 */
 .main-container {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -7,18 +8,23 @@
   flex-direction: column;
   align-items: center;
 }
+
 .content {
   max-width: 1200px;
   width: 100%;
   padding: 20px;
 }
 
+/* 섹션 제목 */
 .popular-books h2,
 .community-board h2,
 .user-info h2 {
   margin-bottom: 10px;
+  font-size: 1.5rem;
+  color: #333;
 }
 
+/* 도서 그리드 */
 .book-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -32,6 +38,7 @@
   border-radius: 4px;
 }
 
+/* 게시판 테이블 */
 .board-table {
   width: 100%;
   border-collapse: collapse;
@@ -42,48 +49,77 @@
   border: 1px solid #ddd;
 }
 
+/* 사용자 정보 카드 스타일 */
+.user-info {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-top: 20px;
+}
+
 .user-info .profile {
   display: flex;
   align-items: center;
 }
 
+/* 아바타 스타일 (이미지 있으면 이미지 적용) */
 .avatar {
-  width: 50px;
-  height: 50px;
+  width: 70px;
+  height: 70px;
   background-color: #cce5ff;
   border-radius: 50%;
-  margin-right: 10px;
+  margin-right: 15px;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 사용자 상세 정보 */
+.user-details {
+  flex: 1;
+}
+
+.user-details p {
+  margin: 4px 0;
+  color: #555;
+}
+
+/* 라이브러리 버튼 */
 .library-button {
-  padding: 8px 12px;
+  padding: 10px 16px;
   background-color: #28a745;
   color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .library-button:hover {
   background-color: #218838;
 }
 
-/* 기존 스타일 유지 */
-
-/* widgets 컨테이너 추가 */
+/* widgets 컨테이너 */
 .widgets {
   display: flex;
   gap: 20px; /* 섹션 간 간격 */
   margin-top: 20px;
 }
 
-/* 내부 섹션들(게시판과 사용자 정보)이 동일한 공간을 차지하도록 */
 .widgets > div {
   flex: 1;
 }
 
-/* 필요 시, 내부의 추가 스타일 조정 */
-/* 예시: 게시판 테이블, 사용자 정보 영역 등 */
+/* 인기 대출 도서 섹션 */
 .popular-loan-books {
   text-align: center;
   margin: 20px 0;
@@ -99,13 +135,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 120px; /* 이미지와 동일한 너비 */
+  width: 120px;
 }
 
 .loan-book-item img {
-  width: 120px;       /* 고정 너비 */
-  height: 180px;      /* 고정 높이 */
-  object-fit: cover;  /* 이미지의 중앙 부분을 채움 */
+  width: 120px;
+  height: 180px;
+  object-fit: cover;
   border-radius: 4px;
 }
 
