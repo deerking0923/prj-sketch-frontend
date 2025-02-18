@@ -1,62 +1,86 @@
+/* 전체 컨테이너 */
 .book-detail-container {
-    max-width: 1000px;
-    margin: 40px auto;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-  }
-  
-  .book-detail {
-    display: flex;
-    gap: 40px;
-    background-color: #fff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    overflow: hidden;
-    width: 100%;
-  }
-  
-  .book-image {
-    flex: 0 0 40%;
-    background-color: #f8f8f8;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
-  
-  .book-image img {
-    max-width: 100%;
-    max-height: 500px;
-    object-fit: contain;
-  }
-  
-  .book-info {
-    flex: 1;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-  
-  .book-title {
-    font-size: 2rem;
-    margin-bottom: 20px;
-    color: #333;
-  }
-  
-  .book-author,
-  .book-publisher,
-  .book-isbn,
-  .book-pubdate {
-    margin-bottom: 10px;
-    color: #555;
-    font-size: 1rem;
-  }
-  
-  .book-description {
-    margin-top: 20px;
-    line-height: 1.6;
-    color: #444;
-  }
-  
+  max-width: 1000px;
+  margin: 60px auto;
+  padding: 20px;
+  position: relative;
+  font-family: "Helvetica Neue", sans-serif;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+}
+
+/* 상단 바 (버튼 영역) */
+.detail-topbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+/* 내 서재에 추가 버튼 */
+.library-add-button {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #0069d9, #004a9f);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: background 0.3s, transform 0.3s;
+}
+
+.library-add-button:hover {
+  background: linear-gradient(135deg, #004a9f, #003875);
+  transform: translateY(-2px);
+}
+
+/* 책 상세 섹션 */
+.book-detail {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+/* 책 이미지 */
+.book-image img {
+  width: 230px;
+  height: 320px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+}
+
+/* 책 정보 */
+.book-info {
+  flex: 1;
+}
+
+.book-title {
+  font-size: 2rem;
+  margin: 0 0 10px;
+  color: #333;
+}
+
+.book-author,
+.book-publisher,
+.book-isbn,
+.book-pubdate {
+  margin: 4px 0;
+  color: #555;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.book-description {
+  margin-top: 16px;
+  background-color: #fafafa;
+  padding: 12px;
+  border-left: 4px solid #007bff;
+  border-radius: 4px;
+}
+
+.book-description p {
+  margin: 0;
+  color: #666;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}

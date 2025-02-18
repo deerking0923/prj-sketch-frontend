@@ -3,17 +3,19 @@
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useRouter } from "next/navigation"; // 반드시 import 합니다.
 
 interface UserInfoData {
   name: string;
   email: string;
-  // 추가 필드가 있으면 여기에 선언
+  // 필요한 추가 필드를 여기에 선언
 }
 
 const UserInfo: React.FC = () => {
+  const router = useRouter(); // 여기서 router를 선언합니다.
   const [user, setUser] = useState<UserInfoData | null>(null);
 
-  // 브라우저에서만 존재하는 localStorage 접근
+  // localStorage는 브라우저에서만 존재합니다.
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId");
 
@@ -47,7 +49,12 @@ const UserInfo: React.FC = () => {
         <div className="user-details">
           <p>{user ? user.name : "사용자 이름"}</p>
           <p>{user ? `나의 글: ${user.email}` : "나의 글: 게시글이 없습니다."}</p>
-          <button className="library-button">내 서재 보러가기</button>
+          <button
+            className="library-button"
+            onClick={() => router.push("/mylibrary")}
+          >
+            내 서재 보러가기
+          </button>
         </div>
       </div>
     </div>
