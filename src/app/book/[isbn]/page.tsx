@@ -1,6 +1,6 @@
-// src/app/book/[isbn]/page.tsx (Server Component)
 import React from "react";
-import Link from "next/link";
+//import Link from "next/link";
+import LibraryAddButton from "../../components/LibraryAddButton"; // 경로 주의: app/book/[isbn]에서 components로 접근
 import "./bookDetail.css";
 
 interface BookDetail {
@@ -17,11 +17,14 @@ interface PageProps {
   params: Promise<{ isbn: string }>;
 }
 
+
 export default async function BookDetailPage({ params }: PageProps) {
   const { isbn } = await params;
 
   const res = await fetch(
-    `https://openapi.naver.com/v1/search/book.json?query=${encodeURIComponent(isbn)}&display=1`,
+    `https://openapi.naver.com/v1/search/book.json?query=${encodeURIComponent(
+      isbn
+    )}&display=1`,
     {
       headers: {
         "X-Naver-Client-Id": process.env.NAVER_CLIENT_ID || "",
@@ -29,6 +32,7 @@ export default async function BookDetailPage({ params }: PageProps) {
       },
     }
   );
+
   if (!res.ok) {
     return (
       <div>
@@ -36,6 +40,7 @@ export default async function BookDetailPage({ params }: PageProps) {
       </div>
     );
   }
+
   const data = await res.json();
   const book: BookDetail | undefined = data.items && data.items[0];
   if (!book) {
@@ -44,16 +49,15 @@ export default async function BookDetailPage({ params }: PageProps) {
 
   return (
     <div className="book-detail-container">
-      {/* 상단 영역: 내 서재에 추가 버튼 */}
+      {/* 상단 영역: 로그인한 경우에만 LibraryAddButton이 렌더링됨 */}
       <div className="detail-topbar">
-        <Link
-          href={`/book/${isbn}/add?title=${encodeURIComponent(book.title)}&author=${encodeURIComponent(
-            book.author
-          )}&publisher=${encodeURIComponent(book.publisher)}&thumbnail=${encodeURIComponent(book.image)}`}
-          className="library-add-button"
-        >
-          내 서재에 추가
-        </Link>
+        <LibraryAddButton
+          isbn={isbn}
+          title={book.title}
+          author={book.author}
+          publisher={book.publisher}
+          thumbnail={book.image}
+        />
       </div>
 
       {/* 책 상세 정보 영역 */}
