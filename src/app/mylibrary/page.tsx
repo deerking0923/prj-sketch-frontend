@@ -92,7 +92,7 @@ const MyLibraryPage: React.FC = () => {
 
   // 프로필 페이지로 이동 버튼
   const goToProfilePage = () => {
-    router.push("/profile");
+    router.push("/users/profile");
   };
 
   return (

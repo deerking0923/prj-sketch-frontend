@@ -1,0 +1,68 @@
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .profileHeader {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .profileHeader h1 {
+    font-size: 2rem;
+    margin: 0 0 10px 0;
+  }
+  
+  .profileHeader p {
+    margin: 5px 0;
+    color: #555;
+  }
+  
+  .reviewsSection h2 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+  }
+  
+  .reviewList {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .reviewItem {
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: #fafafa;
+  }
+  
+  .reviewHeader {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  
+  .reviewIsbn {
+    font-weight: bold;
+  }
+  
+  .reviewDate {
+    font-size: 0.9rem;
+    color: #888;
+  }
+  
+  .reviewContent {
+    line-height: 1.5;
+    color: #333;
+  }
+  
+  .loading,
+  .error {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #999;
+    margin-top: 50px;
+  }
+  
