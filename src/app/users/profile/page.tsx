@@ -1,7 +1,7 @@
 "use client";
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import Link from 'next/link';
 import styles from './ProfilePage.module.css';
 
 interface ResponseReview {
@@ -61,7 +61,6 @@ const ProfilePage: React.FC = () => {
       <div className={styles.profileHeader}>
         <h1>{profile.name}님의 프로필</h1>
         <p>Email: {profile.email}</p>
-        {/* <p>User ID: {profile.userId}</p> */}
       </div>
 
       <div className={styles.reviewsSection}>
@@ -70,13 +69,15 @@ const ProfilePage: React.FC = () => {
           <ul className={styles.reviewList}>
             {profile.reviews.map((review) => (
               <li key={review.id} className={styles.reviewItem}>
-                <div className={styles.reviewHeader}>
-                  <span className={styles.reviewIsbn}>ISBN: {review.isbn}</span>
-                  <span className={styles.reviewDate}>
-                    {new Date(review.createDate).toLocaleDateString()}
-                  </span>
-                </div>
-                <p className={styles.reviewContent}>{review.content}</p>
+                <Link href={`/book/${review.isbn}`}>
+                  <div className={styles.reviewHeader}>
+                    <span className={styles.reviewIsbn}>ISBN: {review.isbn}</span>
+                    <span className={styles.reviewDate}>
+                      {new Date(review.createDate).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <p className={styles.reviewContent}>{review.content}</p>
+                </Link>
               </li>
             ))}
           </ul>

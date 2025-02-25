@@ -1,6 +1,6 @@
 import React from "react";
-//import Link from "next/link";
 import LibraryAddButton from "../../components/LibraryAddButton"; // 경로 주의: app/book/[isbn]에서 components로 접근
+import BookReviewSection from "../../components/BookReviewSection"; // 리뷰 섹션 컴포넌트 추가
 import "./bookDetail.css";
 
 interface BookDetail {
@@ -16,7 +16,6 @@ interface BookDetail {
 interface PageProps {
   params: Promise<{ isbn: string }>;
 }
-
 
 export default async function BookDetailPage({ params }: PageProps) {
   const { isbn } = await params;
@@ -85,6 +84,9 @@ export default async function BookDetailPage({ params }: PageProps) {
           </div>
         </div>
       </div>
+
+      {/* 리뷰 섹션 추가 */}
+      <BookReviewSection isbn={isbn} />
     </div>
   );
 }

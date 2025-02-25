@@ -1,0 +1,106 @@
+.reviewSection {
+    margin-top: 40px;
+    padding: 20px;
+    border-top: 1px solid #ddd;
+  }
+  
+  .reviewList {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 20px;
+  }
+  
+  .reviewItem {
+    border: 1px solid #e0e0e0;
+    background-color: #fafafa;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+  }
+  
+  .reviewHeader {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 5px;
+  }
+  
+  .reviewDate {
+    font-size: 0.8rem;
+    color: #666;
+  }
+  
+  .reviewAuthor {
+    font-size: 0.9rem;
+    color: #333;
+    margin-bottom: 5px;
+  }
+  
+  .reviewContent {
+    margin: 0 0 5px;
+  }
+  
+  .reviewForm {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .reviewInput {
+    width: 100%;
+    min-height: 80px;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .submitButton {
+    width: 120px;
+    padding: 8px;
+    background-color: #0070f3;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 10px;
+    margin-bottom: 5px;
+  }
+  
+  .cancelButton {
+    width: 120px;
+    padding: 8px;
+    background-color: #999;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 5px;
+  }
+  
+  .actionButtons {
+    margin-top: 10px;
+  }
+  
+  .editButton,
+  .deleteButton {
+    padding: 6px 12px;
+    margin-right: 8px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  
+  .editButton {
+    background-color: #4caf50;
+    color: white;
+  }
+  
+  .deleteButton {
+    background-color: #f44336;
+    color: white;
+  }
+  
+  .error {
+    color: red;
+  }
+  
