@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { format } from "date-fns";
 import styles from "./style/CommunityBoard.module.css";
 
 interface Post {
@@ -10,7 +11,7 @@ interface Post {
   title: string;
   author: string;
   viewCount: number;
-  createdAt: string; // API에서 반환하는 필드명과 일치
+  createDate: string; // API에서 반환하는 필드명 ("createDate"로 통일)
 }
 
 export default function CommunityBoardWidget() {
@@ -28,7 +29,7 @@ export default function CommunityBoardWidget() {
       const response = await axios.get<Post[]>(`${API_GATEWAY_URL}/community-service/posts`);
       // 내림차순 정렬: 최신 게시글이 위로 오도록 정렬한 후 최근 5건만 선택
       const sortedPosts = response.data.sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        (a, b) => new Date(b.createDate).getTime() - new Date(a.createDate).getTime()
       );
       setPosts(sortedPosts.slice(0, 5));
     } catch (err: unknown) {
@@ -69,7 +70,7 @@ export default function CommunityBoardWidget() {
             <div className={styles.metaInfo}>
               <span>작성자: {post.author}</span>
               <span>조회수: {post.viewCount}</span>
-              <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+              <span>{format(new Date(post.createDate), "yyyy-MM-dd'T'HH:mm:ss")}</span>
             </div>
           </div>
         ))}
