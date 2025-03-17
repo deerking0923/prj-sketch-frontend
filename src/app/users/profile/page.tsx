@@ -56,10 +56,17 @@ const ProfilePage: React.FC = () => {
       return;
     }
 
+    const API_GATEWAY_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL;
+    if (!API_GATEWAY_URL) {
+      setError("API_GATEWAY_URL 환경 변수가 설정되지 않았습니다.");
+      setLoading(false);
+      return;
+    }
+
     const fetchProfile = async () => {
       try {
         const { data } = await axios.get<UserProfile>(
-          `http://127.0.0.1:8000/user-service/users/${userId}`,
+          `${API_GATEWAY_URL}/user-service/users/${userId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setProfile(data);

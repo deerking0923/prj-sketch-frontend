@@ -36,7 +36,7 @@ const MyLibraryDetailPage: React.FC = () => {
   const userId = localStorage.getItem("userId");
 
   const API_GATEWAY_URL =
-    process.env.NEXT_PUBLIC_API_GATEWAY_URL || "http://localhost:8000";
+    process.env.NEXT_PUBLIC_API_GATEWAY_URL;
 
   useEffect(() => {
     if (!token || !userId) {

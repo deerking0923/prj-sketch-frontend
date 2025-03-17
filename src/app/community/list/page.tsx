@@ -22,7 +22,7 @@ export default function CommunityBoardPage() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const PAGE_SIZE = 10;
 
-  const API_GATEWAY_URL = "http://127.0.0.1:8000";
+  const API_GATEWAY_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL;
 
   const fetchPosts = async (): Promise<void> => {
     try {

@@ -24,7 +24,7 @@ export default function CommunityPostDetail() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
-  const API_GATEWAY_URL = "http://127.0.0.1:8000";
+  const API_GATEWAY_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL;
 
   const fetchPost = async () => {
     try {

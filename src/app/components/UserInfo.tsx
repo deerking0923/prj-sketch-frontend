@@ -1,9 +1,8 @@
-// src/app/components/UserInfo.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useRouter } from "next/navigation"; // 반드시 import 합니다.
+import { useRouter } from "next/navigation";
 
 interface UserInfoData {
   name: string;
@@ -12,23 +11,26 @@ interface UserInfoData {
 }
 
 const UserInfo: React.FC = () => {
-  const router = useRouter(); // 여기서 router를 선언합니다.
+  const router = useRouter();
   const [user, setUser] = useState<UserInfoData | null>(null);
 
   // localStorage는 브라우저에서만 존재합니다.
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId");
 
+  // 환경 변수에서 API_GATEWAY_URL을 불러옵니다.
+  const API_GATEWAY_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL;
+
   useEffect(() => {
-    if (token && userId) {
+    if (token && userId && API_GATEWAY_URL) {
       axios
-        .get(`http://127.0.0.1:8000/user-service/users/${userId}`, {
+        .get(`${API_GATEWAY_URL}/user-service/users/${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => setUser(res.data))
         .catch((err) => console.error("User info fetch error:", err));
     }
-  }, [token, userId]);
+  }, [token, userId, API_GATEWAY_URL]);
 
   if (!token || !userId) {
     return (

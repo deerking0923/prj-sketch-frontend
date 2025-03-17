@@ -14,15 +14,18 @@ const LoginPage: React.FC = () => {
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
+      // 환경 변수에서 API URL을 불러옵니다. (클라이언트 코드에서는 NEXT_PUBLIC_ 접두사가 필요합니다.)
+      const API_GATEWAY_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL;
+
       // 로그인 API 호출: user-service의 로그인 엔드포인트
       const response = await axios.post(
-        "http://127.0.0.1:8000/user-service/login",
+        `${API_GATEWAY_URL}/user-service/login`,
         {
           email,
           password,
         },
         {
-          withCredentials: true,  // CORS 설정과 쿠키 포함을 위해 추가
+          withCredentials: true, // CORS 설정과 쿠키 포함을 위해 추가
         }
       );
 
@@ -44,12 +47,12 @@ const LoginPage: React.FC = () => {
         // 로그인 성공 후 메인 페이지로 이동
         router.push("/");
       } else {
-        setError("로그인 정보가 일지하지 않습니다.");
+        setError("로그인 정보가 일치하지 않습니다.");
       }
     } catch (err: unknown) {
       // Axios 에러 체크 및 에러 메시지 문자열화 처리
       if (axios.isAxiosError(err)) {
-        setError("로그인 정보가 일지하지 않습니다.");
+        setError("로그인 정보가 일치하지 않습니다.");
       } else {
         setError("로그인에 실패했습니다.");
       }

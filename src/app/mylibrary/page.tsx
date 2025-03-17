@@ -34,7 +34,7 @@ const MyLibraryPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const PAGE_SIZE = 20;
 
-  const API_GATEWAY_URL = "http://localhost:8000";
+  const API_GATEWAY_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL;
 
   useEffect(() => {
     const token = localStorage.getItem("token");

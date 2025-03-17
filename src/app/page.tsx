@@ -3,7 +3,8 @@ import React from 'react';
 import xml2js from 'xml2js';
 import PopularLoanBooks from './components/PopularLoanBooks';
 import CommunityBoard from './components/CommunityBoard';
-import UserInfoWrapper from './components/UserInfoWrapper'; // 동적 임포트 래퍼 사용
+import UserInfoWrapper from './components/UserInfoWrapper';
+import RecentReviews from './components/RecentReviews'; // 새 컴포넌트 임포트
 import './home.css';
 
 // XML 데이터 구조 타입 정의
@@ -46,7 +47,7 @@ async function getBooks() {
   return books;
 }
 
-// HomePage는 Server Component이므로 async/await 사용 가능
+// 서버 컴포넌트이므로 "use client"를 제거합니다.
 export default async function HomePage() {
   const books = await getBooks();
 
@@ -56,8 +57,8 @@ export default async function HomePage() {
         <PopularLoanBooks books={books} />
         <section className="widgets">
           <CommunityBoard />
-          {/* 클라이언트 전용 UserInfo는 동적 임포트를 통해 렌더링 */}
           <UserInfoWrapper />
+          <RecentReviews />  {/* 최근 리뷰 컴포넌트 */}
         </section>
       </main>
     </div>

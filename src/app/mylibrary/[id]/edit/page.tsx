@@ -40,7 +40,7 @@ export default function MyLibraryEditPage() {
 
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId");
-  const API_GATEWAY_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL || "http://localhost:8000";
+  const API_GATEWAY_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL;
 
   useEffect(() => {
     if (!token || !userId) {
@@ -79,7 +79,7 @@ export default function MyLibraryEditPage() {
       return;
     }
 
-    const API_GATEWAY_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL || "http://localhost:8000";
+    const API_GATEWAY_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL;
     // 수정 API: PUT /mylibrary-service/{userId}/book/{bookId}
     const url = `${API_GATEWAY_URL}/mylibrary-service/${userId}/book/${bookDetail.id}`;
 

@@ -35,13 +35,16 @@ const BookReviewSection: React.FC<BookReviewSectionProps> = ({ isbn }) => {
   const currentUserId =
     typeof window !== "undefined" ? localStorage.getItem("userId") : null;
 
+  // 환경 변수에서 API_GATEWAY_URL 불러오기 (클라이언트 코드이므로 NEXT_PUBLIC_ 접두사가 필요합니다.)
+  const API_GATEWAY_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL;
+
   // 리뷰 목록을 가져오는 함수
   const fetchReviews = async () => {
     try {
       setLoading(true);
       setError("");
       const res = await axios.get<Review[]>(
-        `http://localhost:8000/bookreview-service/reviews/isbn/${isbn}`
+        `${API_GATEWAY_URL}/bookreview-service/reviews/isbn/${isbn}`
       );
       setReviews(res.data);
     } catch (err) {
@@ -57,7 +60,7 @@ const BookReviewSection: React.FC<BookReviewSectionProps> = ({ isbn }) => {
     if (userNames[userId]) return;
     try {
       const res = await axios.get<UserProfileInfo>(
-        `http://localhost:8000/user-service/users/${userId}`
+        `${API_GATEWAY_URL}/user-service/users/${userId}`
       );
       setUserNames((prev) => ({ ...prev, [userId]: res.data.name }));
     } catch (err) {
@@ -90,7 +93,7 @@ const BookReviewSection: React.FC<BookReviewSectionProps> = ({ isbn }) => {
     }
     try {
       await axios.post(
-        `http://localhost:8000/bookreview-service/${userId}/reviews`,
+        `${API_GATEWAY_URL}/bookreview-service/${userId}/reviews`,
         {
           isbn,
           content: newReview,
@@ -115,7 +118,7 @@ const BookReviewSection: React.FC<BookReviewSectionProps> = ({ isbn }) => {
     }
     try {
       await axios.put(
-        `http://localhost:8000/bookreview-service/${userId}/reviews/${reviewId}`,
+        `${API_GATEWAY_URL}/bookreview-service/${userId}/reviews/${reviewId}`,
         {
           content: editingContent,
         },
@@ -141,7 +144,7 @@ const BookReviewSection: React.FC<BookReviewSectionProps> = ({ isbn }) => {
     if (!window.confirm("삭제하시겠습니까?")) return;
     try {
       await axios.delete(
-        `http://localhost:8000/bookreview-service/${userId}/reviews/${reviewId}`,
+        `${API_GATEWAY_URL}/bookreview-service/${userId}/reviews/${reviewId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       fetchReviews();

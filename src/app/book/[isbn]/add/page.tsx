@@ -49,7 +49,7 @@ export default function MyLibraryAddPage() {
       return;
     }
 
-    const API_GATEWAY_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL || "http://localhost:8000";
+    const API_GATEWAY_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL;
     const url = `${API_GATEWAY_URL}/mylibrary-service/${userId}/create`;
 
     try {

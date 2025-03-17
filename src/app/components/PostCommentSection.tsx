@@ -31,7 +31,7 @@ const PostCommentSection: React.FC<PostCommentSectionProps> = ({ postId }) => {
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-  const API_URL = "http://localhost:8000";
+  const API_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL;
 
   // 댓글 목록을 불러오는 함수
   const fetchComments = async () => {
