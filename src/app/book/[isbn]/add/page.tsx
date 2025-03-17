@@ -58,7 +58,7 @@ export default function MyLibraryAddPage() {
         title,
         author,
         publisher,
-        pDate: "", // 출판일은 네이버 API에서 가져오지 않았다면 빈 문자열 처리
+        pDate: "", // 출판일은 네이버 API에서 가져오지 않았다면 빈 문자열 처리 d
         thumbnail,
         personalReview,
         quotes: quotes.filter(q => q.pageNumber || q.quoteText),
