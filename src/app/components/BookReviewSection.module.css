@@ -1,106 +1,135 @@
 .reviewSection {
-    margin-top: 40px;
-    padding: 20px;
-    border-top: 1px solid #ddd;
-  }
-  
-  .reviewList {
-    list-style: none;
-    padding: 0;
-    margin-bottom: 20px;
-  }
-  
-  .reviewItem {
-    border: 1px solid #e0e0e0;
-    background-color: #fafafa;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 4px;
-  }
-  
-  .reviewHeader {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 5px;
-  }
-  
-  .reviewDate {
-    font-size: 0.8rem;
-    color: #666;
-  }
-  
-  .reviewAuthor {
-    font-size: 0.9rem;
-    color: #333;
-    margin-bottom: 5px;
-  }
-  
-  .reviewContent {
-    margin: 0 0 5px;
-  }
-  
-  .reviewForm {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .reviewInput {
-    width: 100%;
-    min-height: 80px;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  .submitButton {
-    width: 120px;
-    padding: 8px;
-    background-color: #0070f3;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-right: 10px;
-    margin-bottom: 5px;
-  }
-  
-  .cancelButton {
-    width: 120px;
-    padding: 8px;
-    background-color: #999;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-bottom: 5px;
-  }
-  
-  .actionButtons {
-    margin-top: 10px;
-  }
-  
-  .editButton,
-  .deleteButton {
-    padding: 6px 12px;
-    margin-right: 8px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9rem;
-  }
-  
-  .editButton {
-    background-color: #4caf50;
-    color: white;
-  }
-  
-  .deleteButton {
-    background-color: #f44336;
-    color: white;
-  }
-  
-  .error {
-    color: red;
-  }
-  
+  margin-top: 50px;
+  padding: 20px;
+  border-top: 1px solid #ddd;
+}
+
+.reviewList {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.reviewItem {
+  border: 1px solid #e0e0e0;
+  background-color: #fafafa;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  position: relative; /* To allow absolute positioning of the date and buttons */
+}
+
+.reviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.reviewDate {
+  font-size: 0.8rem;
+  color: #666;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
+
+.reviewAuthor {
+  font-size: 0.9rem;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.reviewContent {
+  margin: 0 0 5px;
+}
+
+.reviewForm {
+  display: flex;
+  flex-direction: column;
+}
+
+.reviewInput {
+  width: 100%;
+  min-height: 80px;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.submitButton {
+  width: 120px;
+  padding: 8px;
+  background-color: #0070f3;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: auto; /* Move the button to the right */
+  margin-top: 10px; /* Add a bit of space on top */
+}
+
+.cancelButton {
+  width: 120px;
+  padding: 8px;
+  background-color: #999;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 5px;
+}
+
+.actionButtons {
+  margin-top: 10px;
+}
+
+.editButton, .deleteButton {
+  background: transparent; /* 배경 제거 */
+  border: none; /* 테두리 제거 */
+  cursor: pointer; /* 클릭 가능하게 설정 */
+  padding: 5px;
+}
+
+.editButton:hover, .deleteButton:hover {
+  opacity: 0.7; /* 호버 시 투명도 효과 */
+}
+
+.error {
+  color: red;
+}
+.reviewItem {
+  border: 1px solid #e0e0e0;
+  background-color: #fafafa;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  position: relative; /* 아이콘 위치를 조정할 때 필요 */
+}
+
+.actionButtons {
+  position: absolute; /* 오른쪽 위로 위치를 절대 지정 */
+  top: 10px; /* 상단 여백 */
+  right: 10px; /* 오른쪽 여백 */
+  display: flex;
+  gap: 10px;
+}
+
+.editButton, .deleteButton {
+  background: transparent; /* 배경 제거 */
+  border: none; /* 테두리 제거 */
+  cursor: pointer; /* 클릭 가능하게 설정 */
+  padding: 0px;
+}
+
+.icon {
+  width: 16px; /* 아이콘 크기 줄이기 */
+  height: 16px; /* 아이콘 크기 줄이기 */
+  object-fit: contain; /* 아이콘 비율을 유지하며 크기 조정 */
+}
+
+.editButton:hover, .deleteButton:hover {
+  opacity: 0.7; /* 호버 시 투명도 효과 */
+}

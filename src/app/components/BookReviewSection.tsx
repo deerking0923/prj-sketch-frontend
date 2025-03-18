@@ -1,5 +1,4 @@
-"use client";
-
+"use client"
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "./BookReviewSection.module.css";
@@ -92,16 +91,24 @@ const BookReviewSection: React.FC<BookReviewSectionProps> = ({ isbn }) => {
       return;
     }
     try {
+      const newReviewData = {
+        id: Date.now(), // Temporarily assigning a unique ID for the new review
+        isbn,
+        userId,
+        createDate: new Date().toISOString(),
+        content: newReview,
+      };
+      // Optimistically update the UI with the new review
+      setReviews((prevReviews) => [newReviewData, ...prevReviews]);
+      setNewReview("");
+
+      // Post the review to the backend
       await axios.post(
         `${API_GATEWAY_URL}/bookreview-service/${userId}/reviews`,
-        {
-          isbn,
-          content: newReview,
-        },
+        newReviewData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setNewReview("");
-      fetchReviews();
+      fetchReviews(); // Fetch latest reviews from the server after posting
     } catch (err) {
       console.error(err);
       setError("리뷰 등록에 실패했습니다.");
@@ -126,7 +133,7 @@ const BookReviewSection: React.FC<BookReviewSectionProps> = ({ isbn }) => {
       );
       setEditingReviewId(null);
       setEditingContent("");
-      fetchReviews();
+      fetchReviews(); // 최신 리뷰 가져오기
     } catch (err) {
       console.error(err);
       setError("리뷰 수정에 실패했습니다.");
@@ -143,11 +150,13 @@ const BookReviewSection: React.FC<BookReviewSectionProps> = ({ isbn }) => {
     }
     if (!window.confirm("삭제하시겠습니까?")) return;
     try {
+      // Optimistically remove the review from the UI
+      setReviews((prevReviews) => prevReviews.filter((review) => review.id !== reviewId));
       await axios.delete(
         `${API_GATEWAY_URL}/bookreview-service/${userId}/reviews/${reviewId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      fetchReviews();
+      fetchReviews(); // Fetch latest reviews from the server after deleting
     } catch (err) {
       console.error(err);
       setError("리뷰 삭제에 실패했습니다.");
@@ -156,7 +165,7 @@ const BookReviewSection: React.FC<BookReviewSectionProps> = ({ isbn }) => {
 
   return (
     <div className={styles.reviewSection}>
-      <h2>리뷰</h2>
+      <h2>서평</h2>
       {loading ? (
         <p>리뷰 로딩 중...</p>
       ) : error ? (
@@ -166,6 +175,7 @@ const BookReviewSection: React.FC<BookReviewSectionProps> = ({ isbn }) => {
           {reviews.map((review) => (
             <li key={review.id} className={styles.reviewItem}>
               <div className={styles.reviewHeader}>
+                {/* 날짜를 왼쪽 상단으로 이동 */}
                 <span className={styles.reviewDate}>
                   {new Date(review.createDate).toLocaleDateString()}
                 </span>
@@ -209,13 +219,21 @@ const BookReviewSection: React.FC<BookReviewSectionProps> = ({ isbn }) => {
                         }}
                         className={styles.editButton}
                       >
-                        수정
+                        <img
+                          src="/edit_icon.png"
+                          alt="Edit"
+                          className={styles.icon}
+                        />
                       </button>
                       <button
                         onClick={() => handleDelete(review.id)}
                         className={styles.deleteButton}
                       >
-                        삭제
+                        <img
+                          src="/delete_icon.png"
+                          alt="Delete"
+                          className={styles.icon}
+                        />
                       </button>
                     </div>
                   )}
