@@ -11,6 +11,7 @@ import './home.css';
 interface XMLDoc {
   bookname: string[];
   bookImageURL: string[];
+  isbn13?: string[];
 }
 
 interface XMLResponse {
@@ -42,6 +43,7 @@ async function getBooks() {
   const books = docs.map((doc: XMLDoc) => ({
     title: doc.bookname[0],
     imageUrl: doc.bookImageURL[0],
+    isbn: doc.isbn13 ? doc.isbn13[0] : 'default-isbn',  // isbn이 없다면 기본값을 설정
   }));
   
   return books;
