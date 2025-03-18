@@ -13,13 +13,10 @@ const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    if (pathname === "/") {
-      setSearchQuery("");
-    }
     // localStorage가 브라우저에서만 존재하므로 체크
     const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
-  }, [pathname]);
+  }, []);
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -35,8 +32,12 @@ const Header = () => {
 
   return (
     <header className="header">
-      {/* <div className="logo">로고</div> */}
-      {pathname === "/" ? (
+      <Link href="/">
+        {/* 로고 이미지 중앙에 배치 */}
+        <img src="/logo02.png" alt="로고" className="logo" />
+      </Link>
+
+      {pathname === "/" && (
         <form className="search-container" onSubmit={handleSearch}>
           <input
             type="text"
@@ -49,13 +50,8 @@ const Header = () => {
             검색
           </button>
         </form>
-      ) : (
-        <Link href="/">
-          <div className="alt-text" style={{ cursor: "pointer" }}>
-            다독다독
-          </div>
-        </Link>
       )}
+
       <div className="auth-buttons">
         {isLoggedIn ? (
           <div className="auth-logged-in">

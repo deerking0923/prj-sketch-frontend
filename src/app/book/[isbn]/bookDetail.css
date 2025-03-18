@@ -20,11 +20,11 @@
 /* 내 서재에 추가 버튼 */
 .library-add-button {
   padding: 12px 24px;
-  background: linear-gradient(135deg, #0069d9, #004a9f);
+  background: #0069d9;
   color: #fff;
   text-decoration: none;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: background 0.3s, transform 0.3s;
 }
 
@@ -51,11 +51,12 @@
 
 /* 책 정보 */
 .book-info {
+  margin-top: 10px;
   flex: 1;
 }
 
 .book-title {
-  font-size: 2rem;
+  font-size: 1.8rem; /* 책 제목 크기 줄임 */
   margin: 0 0 10px;
   color: #333;
 }
@@ -66,7 +67,7 @@
 .book-pubdate {
   margin: 4px 0;
   color: #555;
-  font-size: 0.95rem;
+  font-size: 0.9rem; /* 책 정보의 글씨 크기 조금 더 작게 */
   line-height: 1.4;
 }
 
@@ -81,6 +82,6 @@
 .book-description p {
   margin: 0;
   color: #666;
-  font-size: 0.95rem;
+  font-size: 0.9rem; /* 설명 텍스트 크기 줄임 */
   line-height: 1.4;
 }

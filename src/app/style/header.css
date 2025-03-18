@@ -111,3 +111,8 @@
   margin-right: 10px;
 }
 
+/* 로고 스타일 */
+.logo {
+  width: 120px;  /* 원하는 크기 */
+  height: auto;  /* 비율 유지 */
+}
