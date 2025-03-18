@@ -80,7 +80,7 @@ export default function CommunityBoardPage() {
             <h3>{post.title}</h3>
             <div className={styles.metaInfo}>
               <span>작성자: {post.author}</span>
-              <span>조회수: {post.viewCount}</span>
+
               <span>
                 {format(new Date(post.createDate), "yyyy-MM-dd'T'HH:mm:ss")}
               </span>

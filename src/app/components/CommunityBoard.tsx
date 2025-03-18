@@ -74,7 +74,6 @@ export default function CommunityBoardWidget() {
             <h3>{post.title}</h3>
             <div className={styles.metaInfo}>
               <span>작성자: {post.author}</span>
-              <span>조회수: {post.viewCount}</span>
               <span>{formatDate(post.createDate)}</span>
             </div>
           </div>

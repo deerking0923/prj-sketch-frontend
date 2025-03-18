@@ -77,7 +77,7 @@ export default function CommunityPostDetail() {
       <h1 className={styles.title}>{post.title}</h1>
       <div className={styles.meta}>
         <span>작성자: {post.author}</span>
-        <span>조회수: {post.viewCount}</span>
+
         <span>{format(new Date(post.createDate), "yyyy-MM-dd'T'HH:mm:ss")}</span>
       </div>
       <div className={styles.content}>
