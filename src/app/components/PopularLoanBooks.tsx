@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import style from './style/PopularLoanBooks.module.css'; // CSS 모듈을 import
 
 interface Book {
   title: string;
@@ -13,11 +14,11 @@ interface PopularLoanBooksProps {
 
 const PopularLoanBooks: React.FC<PopularLoanBooksProps> = ({ books }) => {
   return (
-    <section className="popular-loan-books">
+    <section className={style['popular-loan-books']}> {/* CSS 모듈 클래스 이름 적용 */}
       <h2>인기 대출 도서</h2>
-      <div className="loan-book-grid">
+      <div className={style['loan-book-grid']}> {/* CSS 모듈 클래스 이름 적용 */}
         {books.map((book, index) => (
-          <div key={index} className="loan-book-item">
+          <div key={index} className={style['loan-book-item']}> {/* CSS 모듈 클래스 이름 적용 */}
             <Link href={`/book/${book.isbn}`}>
               {book.imageUrl ? (
                 <img src={book.imageUrl} alt={book.title} />

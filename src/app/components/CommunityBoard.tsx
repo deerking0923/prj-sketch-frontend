@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
-import styles from "./style/CommunityBoard.module.css";
+import styles from "./style/CommunityBoard.module.css"; // CSS 모듈을 import
 
 interface Post {
   id: number;
@@ -52,12 +52,17 @@ export default function CommunityBoardWidget() {
     router.push("/community/list");
   };
 
+  // 날짜 포맷: yyyy-MM-dd (T자 제거)
+  const formatDate = (date: string): string => {
+    return format(new Date(date), "yyyy-MM-dd");
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <h1>커뮤니티 게시판</h1>
         <button className={styles.gotoButton} onClick={handleGotoList}>
-          게시판 전체보기
+          <img src="/arrow.png" alt="게시판 전체보기" className={styles.arrowIcon} />
         </button>
       </div>
       {loading && <p>게시글 로딩 중...</p>}
@@ -70,7 +75,7 @@ export default function CommunityBoardWidget() {
             <div className={styles.metaInfo}>
               <span>작성자: {post.author}</span>
               <span>조회수: {post.viewCount}</span>
-              <span>{format(new Date(post.createDate), "yyyy-MM-dd'T'HH:mm:ss")}</span>
+              <span>{formatDate(post.createDate)}</span>
             </div>
           </div>
         ))}

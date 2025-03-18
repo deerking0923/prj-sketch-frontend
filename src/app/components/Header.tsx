@@ -1,4 +1,3 @@
-// src/app/components/Header.tsx
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -30,15 +29,19 @@ const Header = () => {
     }
   };
 
+  const handleMyLibraryClick = () => {
+    router.push("/mylibrary");
+  };
+
   return (
     <header className="header">
-      <div className="logo">로고</div>
+      {/* <div className="logo">로고</div> */}
       {pathname === "/" ? (
         <form className="search-container" onSubmit={handleSearch}>
           <input
             type="text"
             className="search-bar"
-            placeholder="검색바"
+            placeholder="검색어를 입력하세요..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -55,8 +58,16 @@ const Header = () => {
       )}
       <div className="auth-buttons">
         {isLoggedIn ? (
-          // 로그인 상태이면 로그아웃 버튼을 표시
-          <LogoutButton />
+          <div className="auth-logged-in">
+            <img
+              src="/userinfo.png"
+              alt="내 정보"
+              className="userinfo-icon"
+              onClick={handleMyLibraryClick}
+              style={{ cursor: "pointer", marginRight: "10px" }}  // 클릭 시 /mylibrary로 이동
+            />
+            <LogoutButton />
+          </div>
         ) : (
           <>
             <Link href="/login" legacyBehavior>

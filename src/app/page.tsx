@@ -3,7 +3,7 @@ import React from 'react';
 import xml2js from 'xml2js';
 import PopularLoanBooks from './components/PopularLoanBooks';
 import CommunityBoard from './components/CommunityBoard';
-import UserInfoWrapper from './components/UserInfoWrapper';
+// import UserInfoWrapper from './components/UserInfoWrapper';
 import RecentReviews from './components/RecentReviews'; // 새 컴포넌트 임포트
 import './home.css';
 
@@ -59,7 +59,7 @@ export default async function HomePage() {
         <PopularLoanBooks books={books} />
         <section className="widgets">
           <CommunityBoard />
-          <UserInfoWrapper />
+          {/* <UserInfoWrapper /> */}
           <RecentReviews />  {/* 최근 리뷰 컴포넌트 */}
         </section>
       </main>

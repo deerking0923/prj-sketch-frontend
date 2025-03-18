@@ -1,0 +1,56 @@
+/* 인기 대출 도서 섹션 */
+.popular-loan-books {
+    text-align: center;
+    margin: 40px 0; /* 섹션 여백을 늘려서 여유 공간 확보 */
+  }
+  
+  .popular-loan-books h2 {
+    font-size: 2rem; /* 제목 글씨 크기 키움 */
+    font-weight: bold;
+    color: #333; /* 글씨 색상 */
+    margin-bottom: 50px; /* 제목과 내용 간 여백 */
+  }
+  
+  .loan-book-grid {
+    display: flex;
+    justify-content: center;
+    gap: 30px; /* 항목 간 여백 증가 */
+    flex-wrap: wrap; /* 화면 크기에 맞게 책 항목이 자동으로 줄 바꿈 */
+  }
+  
+  .loan-book-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 180px; /* 책 아이템의 크기를 키움 */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* 호버 시 효과 추가 */
+    cursor: pointer;
+  }
+  
+  .loan-book-item:hover {
+    transform: translateY(-10px); /* 호버 시 살짝 위로 이동 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 호버 시 그림자 효과 */
+  }
+  
+  .loan-book-item img {
+    width: 160px; /* 이미지 크기 확대 */
+    height: 240px; /* 이미지 세로 크기 확대 */
+    object-fit: cover;
+    border-radius: 8px; /* 모서리 둥글게 처리 */
+    margin-bottom: 15px; /* 이미지와 제목 사이에 여백 추가 */
+  }
+  
+  .loan-book-item p {
+    margin-top: 10px; /* 글씨 아랫부분 여백 추가 */
+    text-align: center;
+    font-size: 1.1rem; /* 제목 글씨 크기 키움 */
+    font-weight: 600;
+    color: #333; /* 제목 색상 */
+    line-height: 1.4;
+    transition: color 0.3s ease;
+  }
+  
+  .loan-book-item p:hover {
+    color: #0070f3; /* 제목에 호버 효과 추가 (색상 변화) */
+  }
+  
