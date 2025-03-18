@@ -91,19 +91,19 @@ const MyLibraryDetailPage: React.FC = () => {
             <h1 className="book-title">{bookDetail.title}</h1>
             <p className="book-author">저자: {bookDetail.author}</p>
             <p className="book-publisher">출판: {bookDetail.publisher}</p>
-            <p className="book-pdate">
+            {/* <p className="book-pdate">
               발행일: {bookDetail.pDate ?? "정보 없음"}
-            </p>
+            </p> */}
             <p className="book-startDate">시작 날짜: {bookDetail.startDate}</p>
             <p className="book-endDate">완독 날짜: {bookDetail.endDate}</p>
           </div>
         </div>
         <div className="action-buttons">
           <button className="edit-btn" onClick={handleEdit}>
-            수정
+            <img src="/edit_icon.png" alt="Edit" className="action-icon" />
           </button>
           <button className="delete-btn" onClick={handleDelete}>
-            삭제
+            <img src="/delete_icon.png" alt="Delete" className="action-icon" />
           </button>
         </div>
       </div>
