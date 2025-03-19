@@ -36,12 +36,12 @@ jobs:
           set -e
           ssh $USER@$HOST << 'EOF'
             # 프로젝트 디렉토리가 없으면 git clone, 있으면 최신 커밋 pull
-            if [ ! -d /home/ubuntu/ezen-main-frontend ]; then
+            if [ ! -d /home/ubuntu/dadok-project-frontend ]; then
               echo "Directory not found. Cloning repository..."
-              git clone https://github.com/deerking0923/ezen-main-frontend.git /home/ubuntu/ezen-main-frontend
+              git clone gh repo clone deerking0923/dadok-project-frontend /home/ubuntu/dadok-project-frontend
             else
               echo "Directory exists. Resetting and pulling latest changes..."
-              cd /home/ubuntu/ezen-main-frontend
+              cd /home/ubuntu/dadok-project-frontend
               git reset --hard HEAD
               git pull
             fi
@@ -55,7 +55,7 @@ jobs:
             source ~/.nvm/nvm.sh
             nvm use 22.13.0
 
-            cd /home/ubuntu/ezen-main-frontend
+            cd /home/ubuntu/dadok-project-frontend
             npm install
             npm run build
           EOF
@@ -66,7 +66,7 @@ jobs:
           ssh $USER@$HOST << 'EOF'
             source ~/.nvm/nvm.sh
             nvm use 22.13.0
-            cd /home/ubuntu/ezen-main-frontend
+            cd /home/ubuntu/dadok-project-frontend
 
             # 이미 deer-side 프로세스가 있다면 중지 후 삭제
             if pm2 describe deer-side > /dev/null; then
