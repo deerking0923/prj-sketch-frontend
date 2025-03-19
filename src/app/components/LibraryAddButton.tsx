@@ -1,7 +1,7 @@
 // app/components/LibraryAddButton.tsx
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 
 interface LibraryAddButtonProps {
@@ -19,10 +19,17 @@ const LibraryAddButton: React.FC<LibraryAddButtonProps> = ({
   publisher,
   thumbnail,
 }) => {
-  const token = localStorage.getItem("token");
-  if (!token) {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, []);
+
+  if (!isLoggedIn) {
     return null; // 로그인하지 않은 경우 표시하지 않음
   }
+
   return (
     <Link
       href={`/book/${isbn}/add?title=${encodeURIComponent(

@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import LogoutButton from "./LogoutButton";  // 로그아웃 버튼 컴포넌트 임포트
 import "../style/header.css";
 
 const Header = () => {
@@ -13,7 +12,6 @@ const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    // localStorage가 브라우저에서만 존재하므로 체크
     const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
   }, []);
@@ -30,10 +28,15 @@ const Header = () => {
     router.push("/mylibrary");
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setIsLoggedIn(false);
+    router.push("/");
+  };
+
   return (
     <header className="header">
       <Link href="/">
-        {/* 로고 이미지 중앙에 배치 */}
         <img src="/logo02.png" alt="로고" className="logo" />
       </Link>
 
@@ -60,9 +63,11 @@ const Header = () => {
               alt="내 정보"
               className="userinfo-icon"
               onClick={handleMyLibraryClick}
-              style={{ cursor: "pointer", marginRight: "10px" }}  // 클릭 시 /mylibrary로 이동
+              style={{ cursor: "pointer", marginRight: "10px" }}
             />
-            <LogoutButton />
+            <button onClick={handleLogout} className="logout-button">
+              로그아웃
+            </button>
           </div>
         ) : (
           <>

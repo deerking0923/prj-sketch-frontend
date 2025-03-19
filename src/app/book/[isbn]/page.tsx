@@ -1,13 +1,15 @@
-
 import LibraryAddButton from "../../components/LibraryAddButton";
 import BookReviewSection from "../../components/BookReviewSection";
 import "./bookDetail.css";
 
-// This will be a Server Component
-export default async function BookDetailPage({ params }: { params: { isbn: string } }) {
-  const { isbn } = params;
+// Next.js 15에서는 params를 반드시 await 처리하여 사용해야 함
+interface Props {
+  params: Promise<{ isbn: string }>;
+}
 
-  // Fetching data on the server
+export default async function BookDetailPage({ params }: Props) {
+  const { isbn } = await params; // 반드시 await로 params 처리
+
   const res = await fetch(
     `https://openapi.naver.com/v1/search/book.json?query=${encodeURIComponent(
       isbn
@@ -36,7 +38,6 @@ export default async function BookDetailPage({ params }: { params: { isbn: strin
 
   return (
     <div className="book-detail-container">
-      {/* 상단 영역: 로그인한 경우에만 LibraryAddButton이 렌더링됨 */}
       <div className="detail-topbar">
         <LibraryAddButton
           isbn={isbn}
@@ -47,7 +48,6 @@ export default async function BookDetailPage({ params }: { params: { isbn: strin
         />
       </div>
 
-      {/* 책 상세 정보 영역 */}
       <div className="book-detail">
         <div className="book-image">
           <img src={book.image} alt={book.title} />
@@ -61,7 +61,6 @@ export default async function BookDetailPage({ params }: { params: { isbn: strin
         </div>
       </div>
 
-      {/* 책 정보(저자, 출판사 등) */}
       <div className="book-additional-info">
         <p className="book-author">
           <strong>저자:</strong> {book.author}
@@ -77,7 +76,6 @@ export default async function BookDetailPage({ params }: { params: { isbn: strin
         </p>
       </div>
 
-      {/* 리뷰 섹션 추가 */}
       <BookReviewSection isbn={isbn} />
     </div>
   );
