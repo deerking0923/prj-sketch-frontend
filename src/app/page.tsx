@@ -49,7 +49,7 @@ async function getBooks() {
   return books;
 }
 
-// 서버 컴포넌트이므로 "use client"를 제거합니다.
+// 서버 컴포넌트이므로 "use client"를 제거합니다. 될말
 export default async function HomePage() {
   const books = await getBooks();
 
