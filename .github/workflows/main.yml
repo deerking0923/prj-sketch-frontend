@@ -14,7 +14,8 @@ jobs:
     env:
       HOST: ${{ secrets.EC2_EZEN_HOST }}
       USER: ${{ secrets.EC2_EZEN_USER }}
-      DATA4LIBRARY_AUTH_KEY: ${{ secrets.DATA4LIBRARY_AUTH_KEY }}
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
     steps:
       - name: Checkout Repository
@@ -31,14 +32,14 @@ jobs:
           ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
           ssh-keyscan -H github.com >> ~/.ssh/known_hosts
 
-      - name: Update Source Code on Oracle
+      - name: Update Source Code on EC2
         run: |
           set -e
           ssh $USER@$HOST << 'EOF'
             # 프로젝트 디렉토리가 없으면 git clone, 있으면 최신 커밋 pull
             if [ ! -d /home/ubuntu/dadok-project-frontend ]; then
               echo "Directory not found. Cloning repository..."
-              git clone gh repo clone deerking0923/dadok-project-frontend /home/ubuntu/dadok-project-frontend
+              git clone https://github.com/deerking0923/dadok-project-frontend.git /home/ubuntu/dadok-project-frontend
             else
               echo "Directory exists. Resetting and pulling latest changes..."
               cd /home/ubuntu/dadok-project-frontend
@@ -60,32 +61,20 @@ jobs:
             npm run build
           EOF
 
-      - name: Deploy Application via PM2
+      - name: Build Docker Image
         run: |
-          set -e
-          ssh $USER@$HOST << 'EOF'
-            source ~/.nvm/nvm.sh
-            nvm use 22.13.0
-            cd /home/ubuntu/dadok-project-frontend
+          ssh $USER@$HOST "cd /home/ubuntu/dadok-project-frontend && sudo docker build -t $DOCKER_USERNAME/dadok-frontend:latest ."
 
-            # 이미 deer-side 프로세스가 있다면 중지 후 삭제
-            if pm2 describe deer-side > /dev/null; then
-              echo "Stopping existing PM2 process..."
-              pm2 stop deer-side || true
-              pm2 delete deer-side || true
-            fi
-
-            echo "Starting PM2 process..."
-            pm2 start npm --name "deer-side" -- run start || { echo "Start failed"; exit 1; }
-            pm2 save || { echo "PM2 save failed"; exit 1; }
-          EOF
-
-      - name: Debug PM2 Logs
+      - name: Deploy Application via Docker
         run: |
           ssh $USER@$HOST << 'EOF'
-            source ~/.nvm/nvm.sh
-            nvm use 22.13.0
-
-            pm2 list
-            pm2 logs deer-side --nostream --lines 100 || true
+            # 기존 애플리케이션 종료
+            sudo docker ps -q --filter "name=dadok-frontend" | xargs -r sudo docker stop
+            sudo docker ps -q --filter "name=dadok-frontend" | xargs -r sudo docker rm
+            sudo docker rmi $(sudo docker images -f "dangling=true" -q)
+            sudo docker rm -f dadok-frontend
+            # 새 도커 컨테이너 실행
+            sudo docker run -d --name dadok-frontend -p 3000:3000 $DOCKER_USERNAME/dadok-frontend:latest
+            # 실행 확인
+            sudo docker logs --tail 10 dadok-frontend
           EOF
