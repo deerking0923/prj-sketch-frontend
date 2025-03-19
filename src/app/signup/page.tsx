@@ -8,7 +8,7 @@ import styles from "./SignUpPage.module.css";
 const SignUpPage: React.FC = () => {
   const router = useRouter();
   const [email, setEmail] = useState<string>("");
-  const [name, setName] = useState<string>("");
+  const [username, setUsername] = useState<string>(""); // 'name' 대신 'username'
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
@@ -22,13 +22,13 @@ const SignUpPage: React.FC = () => {
 
     try {
       const API_GATEWAY_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL;
-
+      // 백엔드의 AuthController에 맞춘 엔드포인트
       const response = await axios.post(
-        `${API_GATEWAY_URL}/user-service/users`,
+        `${API_GATEWAY_URL}/api/v1/auth/signup`,
         {
+          username,
+          password,
           email,
-          name,
-          pwd: password,
         }
       );
 
@@ -38,6 +38,7 @@ const SignUpPage: React.FC = () => {
         setError("회원가입에 실패했습니다.");
       }
     } catch (err: unknown) {
+      console.error(err);
       if (axios.isAxiosError(err)) {
         setError("회원가입에 실패했습니다.");
       } else {
@@ -63,13 +64,13 @@ const SignUpPage: React.FC = () => {
           />
         </div>
         <div className={styles.formGroup}>
-          <label htmlFor="name">이름</label>
+          <label htmlFor="username">사용자명</label>
           <input
             type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="이름을 입력하세요"
+            id="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="사용자명을 입력하세요"
             required
           />
         </div>

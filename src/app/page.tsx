@@ -4,7 +4,7 @@ import xml2js from 'xml2js';
 import PopularLoanBooks from './components/PopularLoanBooks';
 import CommunityBoard from './components/CommunityBoard';
 // import UserInfoWrapper from './components/UserInfoWrapper';
-import RecentReviews from './components/RecentReviews'; // 새 컴포넌트 임포트
+//import RecentReviews from './components/RecentReviews'; // 새 컴포넌트 임포트
 import './home.css';
 
 // XML 데이터 구조 타입 정의
@@ -60,7 +60,7 @@ export default async function HomePage() {
         <section className="widgets">
           <CommunityBoard />
           {/* <UserInfoWrapper /> */}
-          <RecentReviews />  {/* 최근 리뷰 컴포넌트 */}
+          {/* <RecentReviews />  최근 리뷰 컴포넌트 */}
         </section>
       </main>
     </div>

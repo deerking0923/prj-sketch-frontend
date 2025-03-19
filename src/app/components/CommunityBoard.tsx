@@ -4,14 +4,15 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
-import styles from "./style/CommunityBoard.module.css"; // CSS 모듈을 import
+import styles from "./style/CommunityBoard.module.css"; // 기존 스타일 그대로 사용
 
+// 백엔드 QuestionResponse에 맞는 타입 정의
 interface Post {
   id: number;
-  title: string;
-  author: string;
+  subject: string;         // 게시글 제목
+  authorUsername: string;  // 작성자
   viewCount: number;
-  createDate: string; // API에서 반환하는 필드명 ("createDate"로 통일)
+  createdDate: string;
 }
 
 export default function CommunityBoardWidget() {
@@ -26,10 +27,14 @@ export default function CommunityBoardWidget() {
     try {
       setLoading(true);
       setError("");
-      const response = await axios.get<Post[]>(`${API_GATEWAY_URL}/community-service/posts`);
-      // 내림차순 정렬: 최신 게시글이 위로 오도록 정렬한 후 최근 5건만 선택
-      const sortedPosts = response.data.sort(
-        (a, b) => new Date(b.createDate).getTime() - new Date(a.createDate).getTime()
+      // 백엔드의 질문 목록 조회 엔드포인트 (페이지네이션: page=0)
+      const response = await axios.get(`${API_GATEWAY_URL}/api/v1/questions?page=0`);
+      // ApiResponse 형태: { data: { content: [ ... ], ... } }
+      const postsArray: Post[] = response.data.data.content;
+      
+      // 최신 게시글이 위로 오도록 내림차순 정렬 후 최근 5건 선택
+      const sortedPosts = postsArray.sort(
+        (a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime()
       );
       setPosts(sortedPosts.slice(0, 5));
     } catch (err: unknown) {
@@ -71,10 +76,10 @@ export default function CommunityBoardWidget() {
       <div className={styles.postList}>
         {posts.map((post) => (
           <div key={post.id} className={styles.postCard} onClick={() => handlePostClick(post.id)}>
-            <h3>{post.title}</h3>
+            <h3>{post.subject}</h3>
             <div className={styles.metaInfo}>
-              <span>작성자: {post.author}</span>
-              <span>{formatDate(post.createDate)}</span>
+              <span>작성자: {post.authorUsername}</span>
+              <span>{formatDate(post.createdDate)}</span>
             </div>
           </div>
         ))}

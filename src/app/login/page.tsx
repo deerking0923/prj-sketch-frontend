@@ -7,50 +7,22 @@ import "./login.css";
 
 const LoginPage: React.FC = () => {
   const router = useRouter();
-  const [email, setEmail] = useState<string>("");
+  const [username, setUsername] = useState<string>("");  // 이메일 대신 username으로 변경
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      // 환경 변수에서 API URL을 불러옵니다. (클라이언트 코드에서는 NEXT_PUBLIC_ 접두사가 필요합니다.)
       const API_GATEWAY_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL;
-
-      // 로그인 API 호출: user-service의 로그인 엔드포인트
-      const response = await axios.post(
-        `${API_GATEWAY_URL}/user-service/login`,
-        {
-          email,
-          password,
-        },
-        {
-          withCredentials: true, // CORS 설정과 쿠키 포함을 위해 추가
-        }
+      await axios.post(
+        `${API_GATEWAY_URL}/api/v1/auth/login`, // 엔드포인트 경로 확인
+        { username, password },                // username과 password 전송
+        { withCredentials: true }
       );
-
-      // 응답 헤더 확인
-      console.log(response.headers); // 전체 헤더 출력
-
-      // 응답 헤더에서 JWT 토큰과 사용자 ID 추출 (백엔드에서 발급)
-      const token = response.headers["token"];
-      const userId = response.headers["userid"];
-
-      // 콘솔에 토큰과 사용자 ID 출력
-      console.log("Token:", token); // 토큰 확인
-      console.log("User ID:", userId); // 사용자 ID 확인
-
-      if (token && userId) {
-        // JWT 토큰과 사용자 ID를 localStorage에 저장
-        localStorage.setItem("token", token);
-        localStorage.setItem("userId", userId);
-        // 로그인 성공 후 메인 페이지로 이동
-        router.push("/");
-      } else {
-        setError("로그인 정보가 일치하지 않습니다.");
-      }
+      router.push("/");
     } catch (err: unknown) {
-      // Axios 에러 체크 및 에러 메시지 문자열화 처리
+      console.error(err);
       if (axios.isAxiosError(err)) {
         setError("로그인 정보가 일치하지 않습니다.");
       } else {
@@ -65,13 +37,13 @@ const LoginPage: React.FC = () => {
       {error && <p className="error">{error}</p>}
       <form onSubmit={handleLogin}>
         <div className="form-group">
-          <label htmlFor="email">이메일</label>
+          <label htmlFor="username">사용자명</label>
           <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="이메일을 입력하세요"
+            type="text"
+            id="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="사용자명을 입력하세요"
             required
           />
         </div>
@@ -90,6 +62,7 @@ const LoginPage: React.FC = () => {
           로그인
         </button>
       </form>
+
     </div>
   );
 };

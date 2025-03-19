@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import axios from "axios";
 import "../style/header.css";
 
 const Header = () => {
@@ -11,10 +12,25 @@ const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  // 경로(pathname)가 변경될 때마다 인증 상태를 다시 확인합니다.
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token);
-  }, []);
+    const checkAuth = async () => {
+      try {
+        const API_GATEWAY_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL;
+        // /api/v1/auth/me 엔드포인트가 JWT 토큰이 유효하면 사용자 정보를 반환하도록 구현되어 있어야 합니다.
+        const response = await axios.get(`${API_GATEWAY_URL}/api/v1/auth/me`, {
+          withCredentials: true,
+        });
+        if (response.status === 200) {
+          setIsLoggedIn(true);
+        }
+      } catch {
+        setIsLoggedIn(false);
+      }
+    };
+
+    checkAuth();
+  }, [pathname]); // 경로가 변경될 때마다 이 effect가 재실행됩니다.
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -28,10 +44,20 @@ const Header = () => {
     router.push("/mylibrary");
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setIsLoggedIn(false);
-    router.push("/");
+  const handleLogout = async () => {
+    try {
+      const API_GATEWAY_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL;
+      // 로그아웃 API 호출: 백엔드에서 쿠키를 클리어하도록 구현됨
+      await axios.post(
+        `${API_GATEWAY_URL}/api/v1/auth/logout`,
+        {},
+        { withCredentials: true }
+      );
+      setIsLoggedIn(false);
+      router.push("/");
+    } catch (error) {
+      console.error("Logout error", error);
+    }
   };
 
   return (
