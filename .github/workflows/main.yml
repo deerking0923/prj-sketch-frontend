@@ -12,8 +12,8 @@ jobs:
     environment: DEERKING
 
     env:
-      HOST: ${{ secrets.ORACLE_NEXTJS_HOST }}
-      USER: ${{ secrets.ORACLE_NEXTJS_USER }}
+      HOST: ${{ secrets.EC2_EZEN_HOST }}
+      USER: ${{ secrets.EC2_EZEN_USER }}
       DATA4LIBRARY_AUTH_KEY: ${{ secrets.DATA4LIBRARY_AUTH_KEY }}
 
     steps:
@@ -22,7 +22,7 @@ jobs:
 
       - name: Configure SSH Key
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.ORACLE_NEXTJS_KEY }}
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_EZEN_KEY }}
         run: |
           set -e
           mkdir -p ~/.ssh
