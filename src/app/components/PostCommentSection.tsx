@@ -2,139 +2,158 @@
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { format } from "date-fns";
 import styles from "./style/PostCommentSection.module.css";
 
-interface Comment {
+export interface Comment {
   id: number;
-  userId: string;
-  userName: string; // 추가된 필드: 백엔드에서 전달받은 username 사용
-  createDate: string; // API에서 반환되는 날짜 문자열 (createDate로 통일)
   content: string;
+  createdDate: string;
+  authorUsername: string;
 }
 
 interface PostCommentSectionProps {
   postId: number;
+  initialComments: Comment[];
 }
 
-
-const PostCommentSection: React.FC<PostCommentSectionProps> = ({ postId }) => {
-  const [comments, setComments] = useState<Comment[]>([]);
+const PostCommentSection: React.FC<PostCommentSectionProps> = ({ postId, initialComments }) => {
+  // 댓글 목록, 입력 및 수정 관련 상태
+  const [comments, setComments] = useState<Comment[]>(initialComments);
   const [newComment, setNewComment] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editingContent, setEditingContent] = useState<string>("");
 
-  // 현재 로그인한 사용자 ID와 토큰 (실제 인증정보로 대체)
-  const currentUserId =
-    typeof window !== "undefined" ? localStorage.getItem("userId") : null;
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  // 현재 로그인한 사용자 정보 (백엔드에서 /api/v1/auth/me 로 가져옴)
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+  const [currentUsername, setCurrentUsername] = useState<string | null>(null);
 
   const API_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL;
 
-  // 댓글 목록을 불러오는 함수
-  const fetchComments = async () => {
+  // 현재 로그인한 사용자 정보 가져오기
+  const fetchCurrentUser = async () => {
     try {
-      setLoading(true);
-      setError("");
-      const res = await axios.get<Comment[]>(
-        `${API_URL}/community-service/comments/post/${postId}`
-      );
-      setComments(res.data);
+      const response = await axios.get(`${API_URL}/api/v1/auth/me`, { withCredentials: true });
+      // 응답 예시: { roles: [...], id: 1, email: "test@ezen.com", username: "realdeer" }
+      if (response.data && response.data.id && response.data.username) {
+        setCurrentUserId(response.data.id);
+        setCurrentUsername(response.data.username);
+      } else {
+        console.warn("현재 사용자 정보가 예상한 구조가 아닙니다.", response.data);
+        setCurrentUserId(null);
+        setCurrentUsername(null);
+      }
     } catch (err) {
-      console.error(err);
-      setError("댓글 불러오기에 실패했습니다.");
-    } finally {
-      setLoading(false);
+      console.error("현재 사용자 정보를 가져오지 못했습니다.", err);
+      setCurrentUserId(null);
+      setCurrentUsername(null);
     }
   };
 
   useEffect(() => {
-    fetchComments();
+    fetchCurrentUser();
+  }, []);
+
+  // 댓글 목록 새로고침: 게시글 상세 API의 응답에서 댓글 배열(answers)을 가져옴
+  const refreshComments = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/v1/questions/${postId}`, {
+        withCredentials: true,
+      });
+      // 응답 구조: { success: true, data: { ..., answers: Comment[] } }
+      setComments(response.data.data.answers);
+    } catch (err) {
+      console.error(err);
+      setError("댓글 목록을 불러오는 데 실패했습니다.");
+    }
+  };
+
+  useEffect(() => {
+    refreshComments();
   }, [postId]);
 
-  // 새 댓글 등록
-  const handleSubmit = async (e: React.FormEvent) => {
+  // 새 댓글 등록 (POST 요청)
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!newComment.trim()) return;
-    if (!token || !currentUserId) {
+    if (currentUserId === null) {
       alert("로그인이 필요합니다.");
       return;
     }
     try {
       await axios.post(
-        `${API_URL}/community-service/comments/${currentUserId}`,
+        `${API_URL}/api/v1/answers`,
         {
-          postId,
           content: newComment,
+          questionId: postId,
+          userId: currentUserId,
         },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { withCredentials: true }
       );
       setNewComment("");
-      fetchComments();
+      refreshComments();
     } catch (err) {
       console.error(err);
       setError("댓글 등록에 실패했습니다.");
     }
   };
 
-  // 댓글 수정
+  // 댓글 수정 (PUT 요청)
   const handleEditSubmit = async (commentId: number) => {
-    if (!token || !currentUserId) {
-      alert("로그인이 필요합니다.");
-      return;
-    }
+    if (!editingContent.trim()) return;
     try {
       await axios.put(
-        `${API_URL}/community-service/comments/${currentUserId}/${commentId}`,
+        `${API_URL}/api/v1/answers/${commentId}`,
         { content: editingContent },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { withCredentials: true }
       );
       setEditingCommentId(null);
       setEditingContent("");
-      fetchComments();
+      refreshComments();
     } catch (err) {
       console.error(err);
       setError("댓글 수정에 실패했습니다.");
     }
   };
 
-  // 댓글 삭제
+  // 댓글 삭제 (DELETE 요청)
   const handleDelete = async (commentId: number) => {
-    if (!token || !currentUserId) {
-      alert("로그인이 필요합니다.");
-      return;
-    }
     if (!window.confirm("정말 삭제하시겠습니까?")) return;
     try {
-      await axios.delete(
-        `${API_URL}/community-service/comments/${currentUserId}/${commentId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      fetchComments();
+      await axios.delete(`${API_URL}/api/v1/answers/${commentId}`, {
+        withCredentials: true,
+      });
+      refreshComments();
     } catch (err) {
       console.error(err);
       setError("댓글 삭제에 실패했습니다.");
     }
   };
 
+  const formatDate = (dateStr: string): string => {
+    try {
+      const parsedDate = new Date(dateStr);
+      return format(parsedDate, "yyyy-MM-dd HH:mm:ss");
+    } catch (error) {
+      console.error("날짜 포맷 오류", error);
+      return dateStr;
+    }
+  };
+
   return (
     <div className={styles.commentSection}>
       <h2>댓글</h2>
-      {loading ? (
-        <p>댓글 로딩 중...</p>
-      ) : error ? (
-        <p className={styles.error}>{error}</p>
-      ) : comments.length === 0 ? (
+      {error && <p className={styles.error}>{error}</p>}
+      {comments.length === 0 ? (
         <p>작성된 댓글이 없습니다.</p>
       ) : (
         <ul className={styles.commentList}>
           {comments.map((comment) => (
             <li key={comment.id} className={styles.commentItem}>
               <div className={styles.commentHeader}>
-                <span>{comment.userName || comment.userId}</span>
-                <span>{new Date(comment.createDate).toLocaleDateString()}</span>
+                <span>{comment.authorUsername}</span>
+                <span>{formatDate(comment.createdDate)}</span>
               </div>
               {editingCommentId === comment.id ? (
                 <div className={styles.editSection}>
@@ -143,18 +162,15 @@ const PostCommentSection: React.FC<PostCommentSectionProps> = ({ postId }) => {
                     value={editingContent}
                     onChange={(e) => setEditingContent(e.target.value)}
                   />
-                  <button
-                    onClick={() => handleEditSubmit(comment.id)}
-                    className={styles.saveButton}
-                  >
+                  <button className={styles.saveButton} onClick={() => handleEditSubmit(comment.id)}>
                     저장
                   </button>
                   <button
+                    className={styles.cancelButton}
                     onClick={() => {
                       setEditingCommentId(null);
                       setEditingContent("");
                     }}
-                    className={styles.cancelButton}
                   >
                     취소
                   </button>
@@ -162,21 +178,18 @@ const PostCommentSection: React.FC<PostCommentSectionProps> = ({ postId }) => {
               ) : (
                 <>
                   <p className={styles.commentContent}>{comment.content}</p>
-                  {currentUserId === comment.userId && (
+                  {currentUsername && currentUsername === comment.authorUsername && (
                     <div className={styles.actionButtons}>
                       <button
+                        className={styles.editButton}
                         onClick={() => {
                           setEditingCommentId(comment.id);
                           setEditingContent(comment.content);
                         }}
-                        className={styles.editButton}
                       >
                         수정
                       </button>
-                      <button
-                        onClick={() => handleDelete(comment.id)}
-                        className={styles.deleteButton}
-                      >
+                      <button className={styles.deleteButton} onClick={() => handleDelete(comment.id)}>
                         삭제
                       </button>
                     </div>
@@ -187,13 +200,12 @@ const PostCommentSection: React.FC<PostCommentSectionProps> = ({ postId }) => {
           ))}
         </ul>
       )}
-
       <form onSubmit={handleSubmit} className={styles.commentForm}>
         <textarea
+          className={styles.commentTextarea}
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           placeholder="댓글을 입력하세요..."
-          className={styles.commentTextarea}
           required
         />
         <button type="submit" className={styles.submitButton}>

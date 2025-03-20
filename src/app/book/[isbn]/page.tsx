@@ -1,5 +1,5 @@
 import LibraryAddButton from "../../components/LibraryAddButton";
-import BookReviewSection from "../../components/BookReviewSection";
+// import BookReviewSection from "../../components/BookReviewSection";
 import "./bookDetail.css";
 
 // Next.js 15에서는 params를 반드시 await 처리하여 사용해야 함
@@ -76,7 +76,7 @@ export default async function BookDetailPage({ params }: Props) {
         </p>
       </div>
 
-      <BookReviewSection isbn={isbn} />
+      {/* <BookReviewSection isbn={isbn} /> */}
     </div>
   );
 }
