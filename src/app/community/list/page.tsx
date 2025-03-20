@@ -101,6 +101,7 @@ export default function CommunityBoardPage() {
             <div className={styles.metaInfo}>
               <span>작성자: {post.authorUsername}</span>
               <span>{formatDate(post.createdDate)}</span>
+              <span>조회수: {post.viewCount}</span>
             </div>
           </div>
         ))}

@@ -1,38 +1,84 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./mylibraryAdd.css";
 
+interface AuthResponse {
+  id: number;
+  username: string;
+  email: string;
+}
+
+export interface RequestUserBook {
+  isbn: string;
+  title: string;
+  author: string;
+  publisher: string;
+  pDate: string;
+  description: string;
+  thumbnail: string;
+  personalReview: string;
+  quotes: { pageNumber: string; quoteText: string }[];
+  startDate: string;
+  endDate: string;
+}
+
 export default function MyLibraryAddPage() {
   const router = useRouter();
   const params = useParams();            // 경로 파라미터 사용
-  const searchParams = useSearchParams(); // 나머지 query string
+  const searchParams = useSearchParams(); // query string 사용
 
-  // ISBN은 경로 파라미터에서 가져옴.
-  const isbn = params.isbn || "";
+  const isbnParam = params.isbn;
+  const isbn = Array.isArray(isbnParam) ? isbnParam[0] : isbnParam || "";
+  
   // 나머지 정보는 query string에서 가져옴.
   const title = searchParams.get("title") || "";
   const author = searchParams.get("author") || "";
   const publisher = searchParams.get("publisher") || "";
   const thumbnail = searchParams.get("thumbnail") || "";
 
-  // 감상문, 시작날짜, 완독날짜, 기록 문장 상태 관리
+  // 백엔드 인증 응답을 통해 받아올 현재 사용자 정보
+  const [authInfo, setAuthInfo] = useState<AuthResponse | null>(null);
+
+  // 감상문, 시작 날짜, 완독 날짜, 기록 문장 상태 관리
   const [personalReview, setPersonalReview] = useState("");
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [quotes, setQuotes] = useState([{ pageNumber: "", quoteText: "" }]);
 
-  // 추가 문장 필드 추가
+  const API_GATEWAY_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL;
+
+  useEffect(() => {
+    // 백엔드에 인증 요청: 쿠키에 httpOnly로 저장된 토큰이 자동 전송됩니다.
+    axios
+      .get(`${API_GATEWAY_URL}/api/v1/auth/me`, { withCredentials: true })
+      .then((res) => {
+        // 응답 구조가 { id, username, email }로 가정
+        setAuthInfo({
+          id: res.data.id,
+          username: res.data.username,
+          email: res.data.email,
+        });
+      })
+      .catch((err) => {
+        console.error("Failed to fetch user info:", err);
+        router.push("/login");
+      });
+  }, [router, API_GATEWAY_URL]);
+
   const addQuoteField = () => {
     setQuotes([...quotes, { pageNumber: "", quoteText: "" }]);
   };
 
-  // 문장 필드 변경 핸들러
-  const handleQuoteChange = (index: number, field: "pageNumber" | "quoteText", value: string) => {
+  const handleQuoteChange = (
+    index: number,
+    field: "pageNumber" | "quoteText",
+    value: string
+  ) => {
     const newQuotes = [...quotes];
     newQuotes[index][field] = value;
     setQuotes(newQuotes);
@@ -40,44 +86,47 @@ export default function MyLibraryAddPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
-    const userId = localStorage.getItem("userId");
-
-    if (!token || !userId) {
-      alert("로그인 후 이용 가능합니다.");
+    if (!authInfo) {
+      alert("인증 정보가 없습니다. 다시 로그인해주세요.");
       router.push("/login");
       return;
     }
-
-    const API_GATEWAY_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL;
+    if (!title || !author || !publisher || !isbn) {
+      alert("필수 책 정보를 확인해주세요.");
+      return;
+    }
+    const userId = authInfo.id;
     const url = `${API_GATEWAY_URL}/mylibrary-service/${userId}/create`;
 
-    try {
-      const body = {
-        isbn,
-        title,
-        author,
-        publisher,
-        pDate: "", // 출판일은 네이버 API에서 가져오지 않았다면 빈 문자열 처리 d
-        thumbnail,
-        personalReview,
-        quotes: quotes.filter(q => q.pageNumber || q.quoteText),
-        startDate: startDate ? startDate.toISOString().slice(0, 10) : "",
-        endDate: endDate ? endDate.toISOString().slice(0, 10) : "",
-        description: "", // 필요에 따라 책 설명을 추가
-      };
+    const body: RequestUserBook = {
+      isbn,
+      title,
+      author,
+      publisher,
+      pDate: "", // 출판일 정보가 없으면 빈 문자열 처리
+      thumbnail,
+      personalReview,
+      quotes: quotes.filter(q => q.pageNumber || q.quoteText),
+      startDate: startDate ? startDate.toISOString().slice(0, 10) : "",
+      endDate: endDate ? endDate.toISOString().slice(0, 10) : "",
+      description: "", // 책 설명 (필요 시 추가)
+    };
 
-      const res = await axios.post(url, body, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+    try {
+      const res = await axios.post(url, body, { withCredentials: true });
       console.log("성공:", res.data);
       alert("내 서재에 추가되었습니다.");
-      router.push("/mylibrary"); // 내 서재 목록으로 이동
+      router.push("/mylibrary");
     } catch (err) {
       console.error(err);
       alert("추가 실패");
     }
   };
+
+  // 인증 정보가 아직 로드되지 않았다면 로딩 처리
+  if (!authInfo) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="mylibrary-add-container">
@@ -86,10 +135,18 @@ export default function MyLibraryAddPage() {
         <div className="book-summary">
           <img src={thumbnail} alt={title} />
           <div>
-            <p><strong>제목:</strong> {title}</p>
-            <p><strong>저자:</strong> {author}</p>
-            <p><strong>출판사:</strong> {publisher}</p>
-            <p><strong>ISBN:</strong> {isbn}</p>
+            <p>
+              <strong>제목:</strong> {title}
+            </p>
+            <p>
+              <strong>저자:</strong> {author}
+            </p>
+            <p>
+              <strong>출판사:</strong> {publisher}
+            </p>
+            <p>
+              <strong>ISBN:</strong> {isbn}
+            </p>
           </div>
         </div>
 

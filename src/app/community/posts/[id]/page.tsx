@@ -91,7 +91,7 @@ export default function CommunityPostDetail() {
 
   // 게시글 수정 핸들러 (예시: 별도 수정 페이지로 이동)
   const handlePostEdit = () => {
-    router.push(`/posts/edit/${post?.id}`);
+    router.push(`/community/posts/${post?.id}/edit`);
   };
 
   // 게시글 삭제 핸들러
