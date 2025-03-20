@@ -37,7 +37,7 @@ const MyLibraryPage: React.FC = () => {
   const API_GATEWAY_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL;
 
   useEffect(() => {
-    // withCredentials 옵션을 사용하여 쿠키가 자동 전송되도록 함
+    // withCredentials 옵션을 사용하여 쿠키가 자동 전송되도록 함... 도메인 설정.
     axios
       .get(`${API_GATEWAY_URL}/api/v1/auth/me`, { withCredentials: true })
       .then((res) => {
