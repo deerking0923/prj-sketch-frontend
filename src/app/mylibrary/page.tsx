@@ -93,9 +93,9 @@ const MyLibraryPage: React.FC = () => {
   const handleNextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
 
   // 프로필 페이지로 이동 버튼
-  const goToProfilePage = () => {
-    router.push("/users/profile");
-  };
+  // const goToProfilePage = () => {
+  //   router.push("/users/profile");
+  // };
 
   return (
     <div className="mylibrary-container">
@@ -106,9 +106,9 @@ const MyLibraryPage: React.FC = () => {
             <h2>{profile.name}</h2>
             <p>{profile.email}</p>
           </div>
-          <button className="profile-button" onClick={goToProfilePage}>
+          {/* <button className="profile-button" onClick={goToProfilePage}>
             내 프로필 페이지
-          </button>
+          </button> */}
         </div>
       </section>
 
