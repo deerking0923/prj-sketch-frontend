@@ -77,4 +77,6 @@ jobs:
             sudo docker run -d --name dadok-frontend -p 3000:3000 realdeer/dadok-frontend:latest
             # 실행 확인
             sudo docker logs --tail 10 dadok-frontend
+            # 빌드 캐시 삭제 (사용자 확인 없이 삭제)
+            sudo docker builder prune -a -f
           EOF
