@@ -2,11 +2,11 @@
    HomePage.module.css  (updated: rect 기본 fill 제거)
    ─────────────────────────────────────────────── */
 
-:root {
+/* :root {
   --blue:   #4b83c3;
   --orange: #ff9800;
   --gray:   #6b7280;
-}
+} */
 
 /* 레이아웃 */
 .container {
