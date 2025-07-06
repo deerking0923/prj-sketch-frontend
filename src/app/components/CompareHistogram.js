@@ -4,9 +4,7 @@ import { useD3 } from './useD3';
 import * as d3 from 'd3';
 
 /**
- * 1월·10월을 주황/보라색으로 하이라이트,
- *   • 가로선(전체 폭) – 막대 위
- *   • 숫자 어노테이션 – 막대 위
+ * 1월·10월 막대 강조 + 가로선 + 값 어노테이션(x축 아래)
  */
 export default function CompareHistogram({
   width  = 700,
@@ -14,10 +12,9 @@ export default function CompareHistogram({
   data   = [],
   gap    = 0.03,
 }) {
-  const margin = { top: 20, right: 20, bottom: 50, left: 40 };
-  const yMax   = 5.5;                        // y축 상한 고정
+  const margin = { top: 20, right: 20, bottom: 65, left: 40 }; // 하단 공간 ↑
+  const yMax   = 5.5;
 
-  /* 하이라이트 대상 & 색상 */
   const hiColor = { Jan: 'orange', Oct: 'purple' };
 
   const ref = useD3(
@@ -25,12 +22,11 @@ export default function CompareHistogram({
       const w = width  - margin.left - margin.right;
       const h = height - margin.top  - margin.bottom;
 
-      /* 레이어: grid ⭣ bar ⭣ anno  (append 순서 = z-index) */
       svg.attr('width', width).attr('height', height);
       const g    = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
-      const grid = g.append('g').attr('class', 'grid');           // 맨뒤
-      const bars = g.append('g').attr('class', 'bars');           // 가운데
-      const anno = g.append('g').attr('class', 'annotations');    // 맨앞
+      const grid = g.append('g');
+      const bars = g.append('g');
+      const anno = g.append('g');
 
       /* 스케일 */
       const x = d3.scaleBand()
@@ -38,10 +34,9 @@ export default function CompareHistogram({
         .range([0, w])
         .paddingInner(gap)
         .paddingOuter(0);
-
       const y = d3.scaleLinear().domain([0, yMax]).range([h, 0]);
 
-      /* 축 + 회색 격자 (grid 레이어) */
+      /* 축 & 격자 */
       grid.append('g')
         .call(d3.axisLeft(y).tickSize(-w))
         .selectAll('line')
@@ -58,7 +53,7 @@ export default function CompareHistogram({
           }
         });
 
-      /* 막대 (bars 레이어) */
+      /* 막대 */
       bars.selectAll('rect')
         .data(data)
         .join('rect')
@@ -71,17 +66,18 @@ export default function CompareHistogram({
         .duration(800)
         .attr('y', d => y(d.value))
         .attr('height', d => h - y(d.value))
-        .end()                                 // 애니 끝난 뒤 어노테이션 그리기
-        .then(() => drawAnnotations());
+        .end()
+        .then(drawAnnotations);
 
-      /* 어노테이션 + 하이라이트 선 */
+      /* 어노테이션 */
       function drawAnnotations() {
         const focus = data.filter(d => hiColor[d.category]);
 
         /* 가로선 */
-        anno.selectAll('line')
+        anno.selectAll('line.horiz')
           .data(focus)
           .join('line')
+          .attr('class', 'horiz')
           .attr('x1', 0).attr('x2', w)
           .attr('y1', d => y(d.value))
           .attr('y2', d => y(d.value))
@@ -89,16 +85,17 @@ export default function CompareHistogram({
           .attr('stroke-width', 2)
           .attr('stroke-dasharray', '4 2');
 
-        /* 값 텍스트 */
-        anno.selectAll('text')
+        /* 값 숫자 – x축 라벨보다 아래로 */
+        anno.selectAll('text.value')
           .data(focus)
           .join('text')
+          .attr('class', 'value')
           .attr('x', d => x(d.category) + x.bandwidth() / 2)
-          .attr('y', d => y(d.value) - 8)
+          .attr('y', h + 30)                       // x축 아래 30px
           .attr('text-anchor', 'middle')
           .attr('font-weight', 'bold')
           .attr('fill', d => hiColor[d.category])
-          .text(d => d.value.toFixed(2) + ' in');
+          .text(d => d.value.toFixed(2));          // "in" 제외
       }
     },
     [data, width, height, gap],
