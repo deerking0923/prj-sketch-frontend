@@ -6,7 +6,7 @@ import BarChart from './components/BarChart';
 import Histogram from './components/Histogram';
 import HighlightHistogram from './components/HighlightHistogram';   // ★ 새 import
 import styles from './style/HomePage.module.css';
-
+import CompareHistogram from './components/CompareHistogram';
 export default function HomePage() {
   /* 데모 차트용 데이터 */
   const demoData = [
@@ -64,6 +64,18 @@ export default function HomePage() {
       </h3>
       <div className={styles.chartSection}>
         <HighlightHistogram
+          width={700}
+          height={400}
+          data={precipData}
+          gap={0.03}
+        />
+      </div>
+
+      <h3 className={styles.question}>
+        (2) comparison – 1월과 10월의 강수량을 비교해 보세요.
+      </h3>
+      <div className={styles.chartSection}>
+        <CompareHistogram
           width={700}
           height={400}
           data={precipData}
