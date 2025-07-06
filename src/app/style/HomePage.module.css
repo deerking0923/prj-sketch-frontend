@@ -1,39 +1,72 @@
-/* src/app/style/HomePage.module.css */
+/* ───────────────────────────────────────────────
+   HomePage.module.css  (updated: rect 기본 fill 제거)
+   ─────────────────────────────────────────────── */
 
-/* 전체 레이아웃 */
+:root {
+  --blue:   #4b83c3;
+  --orange: #ff9800;
+  --gray:   #6b7280;
+}
+
+/* 레이아웃 */
 .container {
-  padding: 2rem;
+  padding: 2rem 1rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  line-height: 1.45;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: #222;
 }
 
-/* 제목 영역 */
 .title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 1rem;
 }
 
-/* 차트 래퍼(여유 여백 등) */
-.chartWrapper {
-  margin-bottom: 1rem;   /* 바로 아래 이미지와 간격 */
-}
-
-/* 이미지 */
-.figure {
-  width: 600px;          /* 고정 가로값 */
-  max-width: 100%;       /* 화면 좁으면 축소 */
-  height: auto;          /* 비율 유지 */
-  display: block;
-}
-
-/* 기존 .container .title .chartWrapper(→ chartSection) .figure 는 그대로 두고,
-   필요하다면 아래 두 줄만 덧붙이면 된다 */
-
-.chartSection {
-  margin-bottom: 2rem;          /* 섹션 간 간격 */
-}
-
-.subtitle {
+.subtitle,
+.question {
   font-size: 1.25rem;
-  font-weight: 500;
-  margin: 0 0 0.5rem;
+  font-weight: 600;
+  margin: 1.25rem 0 0.5rem;
+}
+
+/* 문제 스크린샷 */
+.figure {
+  width: 100%;
+  max-width: 1024px;
+  height: auto;
+  display: block;
+  margin: 1rem auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+}
+
+/* 차트 섹션 */
+.chartSection {
+  margin-bottom: 2.25rem;
+}
+
+/* SVG 기본 글꼴만 상속 */
+.chartSection svg {
+  font-family: inherit;
+}
+
+/* 어노테이션 텍스트 크기 */
+.chartSection text {
+  font-size: 0.8rem;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .title       { font-size: 1.5rem; }
+  .subtitle,
+  .question    { font-size: 1.15rem; }
+  .container   { padding: 1.5rem 0.75rem; }
+}
+@media (max-width: 480px) {
+  .title       { font-size: 1.35rem; }
+  .subtitle,
+  .question    { font-size: 1.05rem; }
+  .chartSection { margin-bottom: 1.75rem; }
 }

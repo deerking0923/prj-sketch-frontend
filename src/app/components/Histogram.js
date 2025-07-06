@@ -2,6 +2,7 @@
 import React from 'react';
 import { useD3 } from './useD3';
 import * as d3 from 'd3';
+import { useTooltip } from './useTooltip';
 
 export default function Histogram({
   width  = 700,
@@ -9,6 +10,8 @@ export default function Histogram({
   data   = [],
   gap    = 0.02,          // 0 ≈ 완전 밀착, 0.02~0.05 = 아주 좁은 틈
 }) {
+  const tooltip = useTooltip();
+  
   const margin = { top: 20, right: 20, bottom: 40, left: 40 };
 
   const ref = useD3(
@@ -50,6 +53,11 @@ export default function Histogram({
         .attr('y', h)
         .attr('height', 0)
         .attr('fill', '#4b83c3')
+        .on('pointerover', (event, d) =>
+        tooltip.show(event, `<strong>${d.category}</strong>: ${d.value}`))
+        .on('pointermove', (event, d) =>
+        tooltip.show(event, `<strong>${d.category}</strong>: ${d.value}`))
+        .on('pointerout', () => tooltip.hide()) 
         .transition()
         .duration(800)
         .attr('y', d => y(d.value))

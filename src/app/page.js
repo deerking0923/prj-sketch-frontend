@@ -38,7 +38,7 @@ export default function HomePage() {
   return (
     <main className={styles.container}>
       {/* ① BarChart 데모 */}
-      <h2 className={styles.title}>BarChart Demo (A‒E)</h2>
+      <h2 className={styles.title}>연습 차트</h2>
       <div className={styles.chartSection}>
         <BarChart width={600} height={350} data={demoData} />
       </div>

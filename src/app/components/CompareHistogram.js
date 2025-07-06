@@ -2,6 +2,7 @@
 import React from 'react';
 import { useD3 } from './useD3';
 import * as d3 from 'd3';
+import { useTooltip } from './useTooltip';
 
 /**
  * 1월·10월 막대 강조 + 가로선 + 값 어노테이션(x축 아래)
@@ -12,6 +13,8 @@ export default function CompareHistogram({
   data   = [],
   gap    = 0.03,
 }) {
+
+  const tooltip = useTooltip();  
   const margin = { top: 20, right: 20, bottom: 65, left: 40 }; // 하단 공간 ↑
   const yMax   = 5.5;
 
@@ -62,6 +65,11 @@ export default function CompareHistogram({
         .attr('y', h)
         .attr('height', 0)
         .attr('fill', d => hiColor[d.category] ?? '#4b83c3')
+        .on('pointerover', (event, d) =>
+        tooltip.show(event, `<strong>${d.category}</strong>: ${d.value}`))
+        .on('pointermove', (event, d) =>
+        tooltip.show(event, `<strong>${d.category}</strong>: ${d.value}`))
+        .on('pointerout', () => tooltip.hide())        
         .transition()
         .duration(800)
         .attr('y', d => y(d.value))

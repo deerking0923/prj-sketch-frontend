@@ -3,6 +3,7 @@
 import React from 'react';
 import { useD3 } from './useD3';
 import * as d3 from 'd3';
+import { useTooltip } from './useTooltip';
 
 export default function RankHistogram({
   width  = 700,
@@ -10,6 +11,7 @@ export default function RankHistogram({
   data   = [],
   gap    = 0.03,
 }) {
+  const tooltip = useTooltip();
   const margin = { top: 20, right: 20, bottom: 65, left: 40 }; // ↓ 하단 공간 확대
   const yMax   = 5.5;
 
@@ -80,6 +82,11 @@ export default function RankHistogram({
           }
           return grey;                                        // Jul‒Dec
         })
+        .on('pointerover', (event, d) =>
+        tooltip.show(event, `<strong>${d.category}</strong>: ${d.value}`))
+        .on('pointermove', (event, d) =>
+        tooltip.show(event, `<strong>${d.category}</strong>: ${d.value}`))
+        .on('pointerout', () => tooltip.hide()) 
         .transition()
         .duration(800)
         .attr('y', d => y(d.value))

@@ -2,6 +2,8 @@
 import React from 'react';
 import { useD3 } from './useD3';
 import * as d3 from 'd3';
+import { useTooltip } from './useTooltip';
+
 
 /**
  * 최대·최소 막대를 주황색으로, 해당 달 레이블도 주황색·볼드 처리
@@ -18,6 +20,8 @@ export default function HighlightHistogram({
   color           = '#4b83c3',
   highlightColor  = 'orange',
 }) {
+  const tooltip = useTooltip();
+
   const margin = { top: 20, right: 20, bottom: 40, left: 40 };
   const yMax = 5.5;                         /* ★ y축 상한 고정 */
 
@@ -82,6 +86,11 @@ export default function HighlightHistogram({
             ? highlightColor
             : color,
         )
+        .on('pointerover', (event, d) =>
+        tooltip.show(event, `<strong>${d.category}</strong>: ${d.value}`))
+        .on('pointermove', (event, d) =>
+        tooltip.show(event, `<strong>${d.category}</strong>: ${d.value}`))
+        .on('pointerout', () => tooltip.hide()) 
         .transition()
         .duration(800)
         .attr('y', d => y(d.value))
