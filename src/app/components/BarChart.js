@@ -17,7 +17,20 @@ export default function BarChart({
       const innerW = width  - margin.left - margin.right;
       const innerH = height - margin.top  - margin.bottom;
 
-      // 최상위 <g>
+      /* ───────────────────────────── 툴팁 DOM 생성 ─────────────────────────── */
+      const tooltip = d3
+        .select('body')                  // 필요하면 컨테이너 ref로 변경 가능
+        .append('div')
+        .style('position', 'absolute')
+        .style('pointer-events', 'none')
+        .style('padding', '4px 8px')
+        .style('background', 'rgba(0,0,0,0.75)')
+        .style('color', '#fff')
+        .style('border-radius', '4px')
+        .style('font', '12px sans-serif')
+        .style('opacity', 0);
+
+      /* ─────────────────────────── SVG & 스케일 설정 ──────────────────────── */
       const g = svg
         .attr('width',  width)
         .attr('height', height)
@@ -25,7 +38,6 @@ export default function BarChart({
         .append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`);
 
-      // 스케일
       const x = d3.scaleBand()
         .domain(data.map((d) => d.category))
         .range([0, innerW])
@@ -36,14 +48,12 @@ export default function BarChart({
         .nice()
         .range([innerH, 0]);
 
-      // 축
       g.append('g')
         .attr('transform', `translate(0,${innerH})`)
         .call(d3.axisBottom(x));
-
       g.append('g').call(d3.axisLeft(y));
 
-      // 막대
+      /* ────────────────────────────── 막대 + 이벤트 ───────────────────────── */
       g.selectAll('rect')
         .data(data)
         .join((enter) =>
@@ -54,6 +64,22 @@ export default function BarChart({
             .attr('y', innerH)
             .attr('height', 0)
             .attr('fill', 'orange')
+            .on('pointerover', function (event, d) {
+              d3.select(this).attr('fill', '#ff9800');
+              tooltip
+                .style('opacity', 1)
+                .html(`<strong>${d.category}</strong>: ${d.value}`);
+            })
+            .on('pointermove', function (event) {
+              tooltip
+                .style('left', event.pageX + 12 + 'px')
+                .style('top', event.pageY - 28 + 'px');
+            })
+            .on('pointerout', function () {
+              d3.select(this).attr('fill', 'orange');
+              tooltip.style('opacity', 0);
+            })
+            // ▽ 애니메이션은 마지막에
             .call((sel) =>
               sel
                 .transition()
@@ -63,7 +89,7 @@ export default function BarChart({
             ),
         );
 
-      // 평균선
+      /* ───────────────────────── 평균선(옵션) ─────────────────────────────── */
       if (showAverage) {
         const avg = d3.mean(data, (d) => d.value);
         g.append('line')
@@ -82,6 +108,11 @@ export default function BarChart({
           .attr('font-weight', 'bold')
           .text(`평균 ${avg.toFixed(1)}`);
       }
+
+      /* ─────────────────────────── cleanup ──────────────────────────────── */
+      return () => {
+        tooltip.remove();            // 툴팁 제거
+      };
     },
     [data, width, height, showAverage],
   );
