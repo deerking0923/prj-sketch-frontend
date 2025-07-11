@@ -9,10 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@jspsych/plugin-html-button-response": "^2.1.0",
     "@types/react-datepicker": "^6.2.0",
     "axios": "^1.7.9",
     "d3": "^7.9.0",
     "js-cookie": "^3.0.5",
+    "jspsych": "^8.2.2",
     "next": "15.1.4",
     "react": "^19.0.0",
     "react-datepicker": "^8.1.0",
