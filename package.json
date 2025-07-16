@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@jspsych/plugin-html-button-response": "^2.1.0",
+    "@jspsych/plugin-survey-likert": "^2.1.0",
     "@types/react-datepicker": "^6.2.0",
     "axios": "^1.7.9",
     "d3": "^7.9.0",
