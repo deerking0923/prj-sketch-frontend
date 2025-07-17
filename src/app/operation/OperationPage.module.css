@@ -1,0 +1,29 @@
+/* OperationPage.module.css */
+
+/* 차트 컨테이너 크기 고정 (원하는 사이즈로 조정하세요) */
+.chartHost {
+  width: 600px;
+  height: 300px;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+}
+
+/* 페이지 전체 레이아웃 */
+.container {
+  padding: 20px;
+  font-family: sans-serif;
+}
+
+/* 버튼 스타일 */
+.button {
+  padding: 0.5rem 1rem;
+  background: #2563eb;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background: #1e40af;
+}
