@@ -8,22 +8,25 @@ export function runRetrieveValue(chartContainer, { key, duration = 600 }) {
   const hlColor   = "#ff6961";
   const origColor = "#5B8FF9";
 
-  const svg     = d3.select(chartContainer).select("svg");
+  const svg = d3.select(chartContainer).select("svg");
+  if (svg.empty()) return chartContainer;
+
   const circles = svg.selectAll("circle");
   const marginL = +svg.attr("data-m-left") || 0;
   const marginT = +svg.attr("data-m-top")  || 0;
 
-  // 1) 모든 포인트 초기화 & 기존 annotation 제거
+  /* ─── ① 공통 리셋 ───────────────────────────── */
   circles
-    .transition()
-    .duration(300)
-    .attr("r", 4)
+    .interrupt()                               // 진행 중인 transition 중단
     .attr("fill", origColor)
+    .attr("r", 4)
+    .attr("opacity", 1)
     .attr("stroke", "none");
 
-  svg.selectAll(".annotation").remove();
+  svg.selectAll(".annotation, .filter-label").remove();
+  /* ──────────────────────────────────────────── */
 
-  // 2) key(year)에 해당하는 포인트 하이라이트
+  /* ─── ② key(year) 포인트 강조 ─────────────── */
   const target = circles.filter(function () {
     return +d3.select(this).attr("data-id") === +key;
   });
@@ -39,12 +42,12 @@ export function runRetrieveValue(chartContainer, { key, duration = 600 }) {
     .duration(duration / 2)
     .attr("r", 6);
 
-  // 3) 값 어노테이션(text) 추가
+  /* ─── ③ 값 어노테이션 추가 ────────────────── */
   const node = target.node();
   if (node) {
-    const cx     = +d3.select(node).attr("cx") + marginL;
-    const cy     = +d3.select(node).attr("cy") + marginT - 10;
-    const revenue = d3.select(node).attr("data-value");
+    const cx = +node.getAttribute("cx") + marginL;
+    const cy = +node.getAttribute("cy") + marginT - 10;
+    const val = node.getAttribute("data-value");
 
     svg.append("text")
       .attr("class", "annotation")
@@ -53,9 +56,8 @@ export function runRetrieveValue(chartContainer, { key, duration = 600 }) {
       .attr("text-anchor", "middle")
       .attr("font-size", 12)
       .attr("fill", hlColor)
-      .text(`${key}: ${revenue}`);
+      .text(`${key}: ${val}`);
   }
 
-  // 4) 최종 DOM 반환
   return chartContainer;
 }
