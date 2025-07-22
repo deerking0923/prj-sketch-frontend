@@ -32,7 +32,11 @@ const SingleBarChart = forwardRef(({ csvUrl, mountRef, xField, yField }, ref) =>
       svg = host.append("svg")
       .attr("viewBox", [0, 0, width, height])
       .attr("data-m-left", margin.left)
-      .attr("data-m-top", margin.top);
+      .attr("data-m-top", margin.top)
+      .attr("data-plot-w", plotW)
+      .attr("data-plot-h", plotH)
+      .attr("data-y-domain-max", yScale.domain()[1]);
+      
       const g = svg.append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -53,7 +57,8 @@ const SingleBarChart = forwardRef(({ csvUrl, mountRef, xField, yField }, ref) =>
           .attr("height", d => plotH - yScale(d[yField]))
           .attr("fill",   "#69b3a2")
           .attr("data-id", d => d[xField])
-          .attr("data-value", d => d[yField]);   // y 값 보존
+          .attr("data-value", d => d[yField])
+          .attr("data-y-domain-max", yScale.domain()[1]);   // y 값 보존
     });
   }, [csvUrl, mountRef, xField, yField]);
 
