@@ -1,3 +1,4 @@
+// src/app/operation/BarChart/page.js
 "use client";
 
 import React, { useRef } from "react";
@@ -8,6 +9,7 @@ import { runRetrieveValue }  from "../functions/BarChart/retrieveValue";
 import { runFilter }         from "../functions/BarChart/filter";
 import { runFindExtremum }   from "../functions/BarChart/findExtremum";
 import { runDetermineRange } from "../functions/BarChart/determineRange";
+import { runCompare }        from "../functions/BarChart/compare";          // ★
 
 export default function BarChartPage() {
   /* refs */
@@ -23,6 +25,12 @@ export default function BarChartPage() {
     runFindExtremum(ref20025.current, { type: "max", duration: 800 });
   const onRange20025 = () =>
     runDetermineRange(ref20025.current, { from: 50, to: 120, duration: 800 });
+  const onCompare20025 = () =>                                                 // ★
+    runCompare(ref20025.current, {
+      keyA: "BBC Radio 4",
+      keyB: "BBC Local Radio",
+      duration: 800,
+    });
 
   /* 201_11 핸들러 */
   const onRetrieve20111 = () =>
@@ -33,10 +41,16 @@ export default function BarChartPage() {
     runFindExtremum(ref20111.current, { type: "min", duration: 800 });
   const onRange20111 = () =>
     runDetermineRange(ref20111.current, { from: 100, to: 300, duration: 800 });
+  const onCompare20111 = () =>                                                 // ★
+    runCompare(ref20111.current, {
+      keyA: "South Skåne",
+      keyB: "West Skåne",
+      duration: 800,
+    });
 
   return (
     <main className={styles.container}>
-      <h1>단일 바 차트: Retrieve · Filter · Extremum · Range</h1>
+      <h1>단일 바 차트: Retrieve · Filter · Extremum · Range · Compare</h1>
 
       {/* ① Service 비용 */}
       <section className={styles.block}>
@@ -49,18 +63,11 @@ export default function BarChartPage() {
           yField="2012/13 Total Cost"
         />
         <div className={styles.buttonRow}>
-          <button className={styles.button} onClick={onRetrieve20025}>
-            BBC Radio 4
-          </button>
-          <button className={styles.button} onClick={onFilter20025}>
-            비용&nbsp;≥&nbsp;100
-          </button>
-          <button className={styles.button} onClick={onMax20025}>
-            최댓값
-          </button>
-          <button className={styles.button} onClick={onRange20025}>
-            50–120&nbsp;범위
-          </button>
+          <button className={styles.button} onClick={onRetrieve20025}>BBC Radio 4</button>
+          <button className={styles.button} onClick={onFilter20025}>비용 ≥ 100</button>
+          <button className={styles.button} onClick={onMax20025}>최댓값</button>
+          <button className={styles.button} onClick={onRange20025}>50–120 범위</button>
+          <button className={styles.button} onClick={onCompare20025}>Radio 4 vs Local</button> {/* ★ */}
         </div>
       </section>
 
@@ -77,18 +84,11 @@ export default function BarChartPage() {
           yField="Density"
         />
         <div className={styles.buttonRow}>
-          <button className={styles.button} onClick={onRetrieve20111}>
-            South&nbsp;Skåne
-          </button>
-          <button className={styles.button} onClick={onFilter20111}>
-            밀도&nbsp;≥&nbsp;200
-          </button>
-          <button className={styles.button} onClick={onMin20111}>
-            최솟값
-          </button>
-          <button className={styles.button} onClick={onRange20111}>
-            100–300&nbsp;범위
-          </button>
+          <button className={styles.button} onClick={onRetrieve20111}>South Skåne</button>
+          <button className={styles.button} onClick={onFilter20111}>밀도 ≥ 200</button>
+          <button className={styles.button} onClick={onMin20111}>최솟값</button>
+          <button className={styles.button} onClick={onRange20111}>100–300 범위</button>
+          <button className={styles.button} onClick={onCompare20111}>South vs West</button>  {/* ★ */}
         </div>
       </section>
     </main>
