@@ -1,42 +1,50 @@
-// src/app/operation/functions/BarChart/retrieveValue.js
 import * as d3 from "d3";
 
-/**
- * 1-1. 입력: chartContainer (DOM), params: { key, duration }
- * 1-2. 출력: 같은 chartContainer DOM (애니메이션이 끝난 후)
- */
 export function runRetrieveValue(chartContainer, { key, duration = 600 }) {
   const hlColor  = "#ff6961";
   const origColor = "#69b3a2";
 
-  // d3 선택기 생성
   const svg  = d3.select(chartContainer).select("svg");
+  if (svg.empty()) return chartContainer;
+
+  const marginL = +svg.attr("data-m-left") || 0;
+  const marginT = +svg.attr("data-m-top")  || 0;
+
   const bars = svg.selectAll("rect");
 
-  // 1) 다른 모든 바들 원래 상태로 리셋
-  bars
-    .transition()
-    .duration(300)
-    .attr("fill", origColor)
-    .attr("stroke", "none")
-    .attr("transform", "scale(1,1)");
+  /* 초기화 */
+  bars.interrupt()
+      .attr("fill", origColor)
+      .attr("stroke", "none")
+      .attr("opacity", 1);
 
-  // 2) key에 해당하는 바만 하이라이트
+  svg.selectAll(".annotation, .filter-label").remove();
+
+  /* ▶︎ BUG FIX: function() { …this… } 로 교체 */
   const target = bars.filter(function () {
     return d3.select(this).attr("data-id") === key;
   });
 
-  target
-    .transition()
-    .duration(duration / 2)
-    .attr("fill", hlColor)
-    .attr("stroke", "black")
-    .attr("stroke-width", 2)
-    .attr("transform", "scale(1.05,1.05)")
-    .transition()
-    .duration(duration / 2)
-    .attr("transform", "scale(1,1)");
+  target.transition()
+        .duration(duration)
+        .attr("fill", hlColor)
+        .attr("stroke", "black")
+        .attr("stroke-width", 2);
 
-  // 3) 업데이트된 DOM 컨테이너 반환
+  const bar = target.node();          // 이제 실제 SVGRectElement
+  if (bar) {
+    const x = +bar.getAttribute("x") + (+bar.getAttribute("width") / 2) + marginL;
+    const y = +bar.getAttribute("y") - 6 + marginT;
+
+    svg.append("text")
+       .attr("class", "annotation")
+       .attr("x", x)
+       .attr("y", y)
+       .attr("text-anchor", "middle")
+       .attr("font-size", 12)
+       .attr("fill", hlColor)
+       .text(key);
+  }
+
   return chartContainer;
 }
