@@ -8,7 +8,7 @@ export function runFilter(
   chartContainer,
   { op = ">=", value, duration = 600 }
 ) {
-  const matchColor = "#ffd54f";
+  const matchColor = "#ffa500";
   const dimOpacity = 0.15;
   const origColor  = "#69b3a2";
 
