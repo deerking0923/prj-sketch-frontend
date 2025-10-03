@@ -13,6 +13,7 @@ export default function Home() {
   const [selectedImageUrl, setSelectedImageUrl] = useState(null);
   const [convertedImage, setConvertedImage] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);  // 진행도 상태 추가
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -48,15 +49,32 @@ export default function Home() {
     }
 
     setLoading(true);
+    setProgress(0);
     setError(null);
+
+    // 가짜 진행도 시뮬레이션
+    const progressInterval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 90) return prev;
+        return prev + Math.random() * 15;
+      });
+    }, 300);
 
     try {
       const result = await convertImage(selectedFile, selectedStyle, parameters);
-      setConvertedImage(`data:image/png;base64,${result.sketch_image_base64}`);
+      clearInterval(progressInterval);
+      setProgress(100);
+      
+      setTimeout(() => {
+        setConvertedImage(`data:image/png;base64,${result.sketch_image_base64}`);
+        setLoading(false);
+        setProgress(0);
+      }, 300);
     } catch (err) {
+      clearInterval(progressInterval);
       setError(err.message || '변환에 실패했습니다.');
-    } finally {
       setLoading(false);
+      setProgress(0);
     }
   };
 
@@ -101,10 +119,25 @@ export default function Home() {
           <button
             onClick={handleConvert}
             disabled={!selectedFile || loading}
-            className="px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400"
+            className="px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
           >
             {loading ? '변환 중...' : '변환하기'}
           </button>
+
+          {/* 진행도 바 */}
+          {loading && (
+            <div className="mt-4 max-w-md mx-auto">
+              <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                <div 
+                  className="bg-blue-600 h-4 rounded-full transition-all duration-300 ease-out"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              <p className="mt-2 text-sm text-gray-600">
+                {Math.round(progress)}% 완료
+              </p>
+            </div>
+          )}
         </div>
 
         {error && (
@@ -117,7 +150,10 @@ export default function Home() {
           <div className="bg-white p-6 rounded-lg shadow-md">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold">변환 결과</h2>
-              <button onClick={handleDownload} className="px-4 py-2 bg-green-600 text-white rounded">
+              <button 
+                onClick={handleDownload} 
+                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+              >
                 다운로드
               </button>
             </div>
