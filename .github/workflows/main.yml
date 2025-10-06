@@ -1,82 +1,66 @@
-name: DEERKING-NextJS CICD
+name: Deploy Next.js Frontend to Oracle Cloud
 
 on:
   push:
-    branches: ['main']
-  pull_request:
-    branches: ['main']
+    branches:
+      - main
 
 jobs:
-  build-and-deploy:
-    runs-on: ubuntu-24.04
-    environment: DEERKING
-
-    env:
-      HOST: ${{ secrets.EC2_EZEN_HOST }}
-      USER: ${{ secrets.EC2_EZEN_USER }}
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-
+  deploy:
+    runs-on: ubuntu-latest
+    
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Configure SSH Key
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.EC2_EZEN_KEY }}
-        run: |
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    
+    - name: Deploy to Oracle Cloud Server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: 22
+        script: |
           set -e
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
-          ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-
-      - name: Update Source Code on EC2
-        run: |
-          set -e
-          ssh $USER@$HOST << 'EOF'
-            # 프로젝트 디렉토리가 없으면 git clone, 있으면 최신 커밋 pull
-            if [ ! -d /home/ubuntu/dadok-project-frontend ]; then
-              echo "Directory not found. Cloning repository..."
-              git clone https://github.com/deerking0923/dadok-project-frontend.git /home/ubuntu/dadok-project-frontend
-            else
-              echo "Directory exists. Resetting and pulling latest changes..."
-              cd /home/ubuntu/dadok-project-frontend
-              git reset --hard HEAD
-              git pull
-            fi
-          EOF
-
-      - name: Install Dependencies and Build
-        run: |
-          set -e
-          ssh $USER@$HOST << 'EOF'
-            # nvm 환경 로드 및 원하는 버전 사용
-            source ~/.nvm/nvm.sh
-            nvm use 22.13.0
-
-            cd /home/ubuntu/dadok-project-frontend
-            npm install
-            npm run build
-          EOF
-
-      - name: Build Docker Image
-        run: |
-          ssh $USER@$HOST "cd /home/ubuntu/dadok-project-frontend && sudo docker build -t $DOCKER_USERNAME/dadok-frontend:latest ."
-
-      - name: Deploy Application via Docker
-        run: |
-          ssh $USER@$HOST << 'EOF'
-            # 기존 애플리케이션 종료
-            sudo docker ps -q --filter "name=dadok-frontend" | xargs -r sudo docker stop
-            sudo docker ps -q --filter "name=dadok-frontend" | xargs -r sudo docker rm
-            sudo docker rmi $(sudo docker images -f "dangling=true" -q)
-            sudo docker rm -f dadok-frontend
-            # 새 도커 컨테이너 실행
-            sudo docker run -d --name dadok-frontend -p 3000:3000 realdeer/dadok-frontend:latest
-            # 실행 확인
-            sudo docker logs --tail 10 dadok-frontend
-            # 빌드 캐시 삭제 (사용자 확인 없이 삭제)
-            sudo docker builder prune -a -f
-          EOF
+          
+          echo "=== Starting Frontend Deployment ==="
+          
+          cd ~/prj-sketch-frontend
+          git pull origin main
+          
+          # .env.local 파일 생성
+          cat > .env.local << 'ENVEOF'
+          NEXT_PUBLIC_API_URL=http://${{ secrets.SERVER_IP }}:8000
+          ENVEOF
+          
+          # 의존성 설치
+          echo "=== Installing Dependencies ==="
+          npm install
+          
+          # 빌드
+          echo "=== Building Next.js ==="
+          npm run build
+          
+          # 기존 서버 종료
+          echo "=== Stopping Existing Next.js Server ==="
+          screen -S nextjs -X quit || true
+          
+          sleep 3
+          
+          # 새 서버 시작
+          echo "=== Starting Next.js Server ==="
+          screen -dmS nextjs bash -c 'cd ~/prj-sketch-frontend && npm start > nextjs.log 2>&1'
+          
+          sleep 5
+          
+          # 서버 확인
+          if screen -list | grep -q "nextjs"; then
+            echo "Next.js server is running"
+          else
+            echo "Failed to start Next.js server"
+            exit 1
+          fi
+          
+          tail -n 20 nextjs.log
+          
+          echo "=== Frontend Deployment Completed ==="
